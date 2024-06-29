@@ -1,5 +1,5 @@
 # Kuconut_BE
-Kuconut Back-End github입니다.
+Kuconut Back-End Repository입니다.
 
 ## install project
 ```bash
