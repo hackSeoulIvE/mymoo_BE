@@ -1,12 +1,12 @@
 # Kuconut_BE
 Kuconut Back-End Repository입니다.
 
-## install project
+## Install project
 ```bash
 git clone https://github.com/Kuconut/Kuconut_BE.git
 ```
 
-## install dependency
+## Install dependency
 ```bash
 npm install
 ```
