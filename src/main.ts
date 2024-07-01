@@ -9,7 +9,16 @@ async function bootstrap() {
     .setTitle('Kuconut')
     .setDescription('Kakao를 이길 Kuconut API 입니다.')
     .setVersion('1.0')
-    .addTag('kuconut')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        name: "JWT",
+        description: "Enter JWT token",
+        in: "header",
+      },
+      'token',
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);

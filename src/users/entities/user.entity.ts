@@ -1,5 +1,6 @@
 import { Delete } from "@nestjs/common";
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BeforeInsert, Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import * as bcrypt from 'bcrypt';
 
 @Entity({ schema: 'users', name: 'user'})
 export class User {
@@ -20,4 +21,9 @@ export class User {
 
     @DeleteDateColumn()
     deletedAt: Date | null;
+
+    @BeforeInsert()
+    private async beforeInsert() {
+      this.password = await bcrypt.hashSync(this.password, 10);
+    }
 }
