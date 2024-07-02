@@ -8,8 +8,8 @@ import { UsersModule } from 'src/users/users.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtStrategy } from 'src/auth/security/passport.jwt.strategy';
-import { GroupModule } from 'src/group/group.module';
-import { Group } from 'src/group/entities/group.entity';
+import { Meeting } from 'src/meeting/entities/meeting.entity';
+import { MeetingModule } from 'src/meeting/meeting.module';
 
 @Module({
   imports: [
@@ -21,12 +21,12 @@ import { Group } from 'src/group/entities/group.entity';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [User, Group],
+      entities: [User, Meeting],
       synchronize: true,
     }),
     UsersModule,
     AuthModule,
-    GroupModule,
+    MeetingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
