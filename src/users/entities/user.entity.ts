@@ -2,7 +2,7 @@ import { Delete } from "@nestjs/common";
 import { BeforeInsert, Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import * as bcrypt from 'bcrypt';
 
-@Entity({ schema: 'users', name: 'user'})
+@Entity({ schema: 'users', name: 'users'})
 export class User {
     @PrimaryGeneratedColumn({name : 'id', type  : 'int'})
     id: number;
