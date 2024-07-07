@@ -19,4 +19,22 @@ export class CreateUserDto {
     @IsString()
     @MaxLength(100)
     password: string;
+
+    @ApiProperty({
+        example: 'thisisemail@email.co.kr',
+        description: 'email',
+    })
+    @IsNotEmpty()
+    @IsString()
+    @MaxLength(100)
+    email: string;
+
+    @ApiProperty({
+        example: '홍길동123',
+        description: 'nickname',
+    })
+    @IsNotEmpty()
+    @IsString()
+    @MaxLength(100)
+    nickname: string;
 }

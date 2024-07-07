@@ -13,6 +13,21 @@ export class User {
     @Column({name : 'password', type : 'varchar', length : 255})
     password: string;
 
+    @Column({name : 'email', type : 'varchar', length : 255})
+    email: string;
+    
+    @Column({name : 'nickname', type : 'varchar', length : 255})
+    nickname: string;
+    
+    @Column({name : 'made_meeting', type : 'varchar', length : 2047})
+    made_meeting: string;
+    
+    @Column({name : 'posted_meeting', type : 'varchar', length : 2047})
+    posted_meeting: string;
+
+    @Column({name : 'liked_meeting', type : 'varchar', length : 2047})
+    liked_meeting: string;
+
     @CreateDateColumn()
     createdAt: Date;
 

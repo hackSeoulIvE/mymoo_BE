@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString, MaxLength } from "class-validator";
+import { IsIn, IsNotEmpty, IsString, MaxLength } from "class-validator";
 
 export class CreateMeetingDto {
     @ApiProperty({
@@ -12,27 +12,46 @@ export class CreateMeetingDto {
     meeting_name: string;
 
     @ApiProperty({
-        example: true,
-        description: 'Whether the meeting is a flash meetup',
-    })
-    @IsNotEmpty()
-    is_flash: boolean;
-
-    @ApiProperty({
-        example: 'honggildong',
-        description: 'The user who created the meeting',
-    })
-    @IsNotEmpty()
-    @IsString()
-    @MaxLength(100)
-    created_by: string;
-
-    @ApiProperty({
-        example: '["honggildong", "heungbu", "nolbu"]',
-        description: 'The users who are in the meeting',
+        example: 'A meeting for chicken lovers',
+        description: 'The description of the meeting',
     })
     @IsNotEmpty()
     @IsString()
     @MaxLength(2047)
-    meetingUsers: string;
+    meeting_description: string;
+
+    @ApiProperty({
+        example: 'play',
+        description: 'The type of the meeting',
+    })
+    @IsIn(['play', 'eat', 'extra', 'study'])
+    type: string;
+
+    @ApiProperty({
+        example: '2024-12-31T23:59:59.000',
+        description: 'The deadline of the meeting',
+    })
+    @IsNotEmpty()
+    deadline: Date;
+
+    @ApiProperty({
+        example: '2024-12-31T23:59:59.000',
+        description: 'The date of the meeting',
+    })
+    @IsNotEmpty()
+    meeting_date: Date;
+
+    @ApiProperty({
+        example: 1,
+        description: 'The minimum number of users in the meeting',
+    })
+    @IsNotEmpty()
+    min_user: number;
+
+    @ApiProperty({
+        example: 10,
+        description: 'The maximum number of users in the meeting',
+    })
+    @IsNotEmpty()
+    max_user: number;
 }

@@ -23,6 +23,7 @@ import { MeetingModule } from 'src/meeting/meeting.module';
       database: process.env.DB_DATABASE,
       entities: [User, Meeting],
       synchronize: true,
+      timezone: '+09:00',
     }),
     UsersModule,
     AuthModule,

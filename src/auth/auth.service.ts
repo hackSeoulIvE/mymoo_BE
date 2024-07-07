@@ -1,21 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
 import * as bcrypt from 'bcrypt';
-import { SigninDto } from './dto/signin-user.dto';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { AuthDto } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
   constructor(private readonly userService: UsersService,
     private readonly jwtService: JwtService
   ){}
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
-  }
 
-  async signin(signinDto: SigninDto) {
+  async signin(signinDto: AuthDto.SignIn) {
     const { user_id, password } = signinDto;
 
     const user = await this.userService.findByUserId(user_id);
@@ -33,5 +28,21 @@ export class AuthService {
     const accessToken = this.jwtService.sign(payload);
 
     return {access_Token: accessToken};
+  }
+
+  async signup(signupDto: AuthDto.SignUp) {
+    const { user_id, password, email, nickname } = signupDto;
+
+    const user = await this.userService.findByUserId(user_id);
+    if(user) {
+      return { message: '이미 존재하는 아이디입니다.' }
+    }
+
+    const userNickname = await this.userService.findByNickname(nickname);
+    if(userNickname) {
+      return { message: '이미 존재하는 닉네임입니다.' }
+    }
+
+    return await this.userService.signup(signupDto);
   }
 }

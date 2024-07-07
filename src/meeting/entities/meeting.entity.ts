@@ -1,12 +1,20 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { MeetingComment } from "./meeting.comment.entity";
 
-@Entity({ schema: 'meetings', name: 'meetings'})
+@Entity()
 export class Meeting {
     @PrimaryGeneratedColumn({name : 'id', type  : 'int'})
     id: number;
 
     @Column({name : 'meeting_name', type : 'varchar', length : 255})
     meeting_name: string;
+
+    @Column({name : 'meeting_description', type : 'varchar', length : 2047})
+    meeting_description: string;
+
+
+    @Column({name : 'type', type : 'varchar', nullable : false, length : 255})
+    type: string;
 
     @Column({name : 'is_flash', type : 'boolean'})
     is_flash: boolean;
@@ -16,6 +24,18 @@ export class Meeting {
 
     @Column({name : 'meetingUsers', type : 'varchar', length : 2047})
     meetingUsers: string;
+
+    @Column({name : 'deadline', type: 'timestamp' })
+    deadline: Date;
+
+    @Column({name : 'meeting_date', type: 'timestamp' })
+    meeting_date: Date;
+
+    @Column({ name: 'min_user', type: 'int' })
+    min_user: number;
+
+    @Column({ name: 'max_user', type: 'int' })
+    max_user: number;
 
     @CreateDateColumn()
     createdAt: Date;

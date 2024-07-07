@@ -1,36 +1,49 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { MeetingService } from './meeting.service';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
-import { UpdateMeetingDto } from './dto/update-meeting.dto';
+import { AuthGuard } from 'src/auth/security/auth.guard';
+import { MeetingIdDto } from './dto/meeting_id.dto';
 
 @ApiTags('Meeting')
 @Controller('meeting')
 export class MeetingController {
   constructor(private readonly meetingService: MeetingService) {}
 
-  @Post()
-  create(@Body() createMeetingDto: CreateMeetingDto) {
-    return this.meetingService.create(createMeetingDto);
+  @Post('make_meeting')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('token')
+  create(@Req() req: Request, @Body() createMeetingDto: CreateMeetingDto) {
+    const { user }:any = req;
+    return this.meetingService.create(user.nickname, createMeetingDto);
   }
 
-  @Get()
-  findAll() {
-    return this.meetingService.findAll();
-  }
-
-  @Get(':id')
+  @Get('id/:id')
   findOne(@Param('id') id: string) {
-    return this.meetingService.findOne(+id);
+    return this.meetingService.findById(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMeetingDto: UpdateMeetingDto) {
-    return this.meetingService.update(+id, updateMeetingDto);
+  @Get('type:type')
+  findByType(@Param('type') type: string) {
+    return this.meetingService.findByType(type);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.meetingService.remove(+id);
+  @Patch('/join')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('token')
+  async joinMeeting(@Req() req: Request, @Body() meetingIdDto: MeetingIdDto) {
+    const meeting_id = meetingIdDto.meeting_id;
+    const { user }:any = req;
+    return await this.meetingService.joinMeeting(user, meeting_id);
+  }
+
+
+  @Delete('/delete')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('token')
+  remove(@Req() req: Request, @Body() meetingIdDto: MeetingIdDto) {
+    const meeting_id = meetingIdDto.meeting_id;
+    const { user }:any = req;
+    return this.meetingService.remove(user, meeting_id);
   }
 }
