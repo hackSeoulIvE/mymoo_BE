@@ -1,6 +1,7 @@
 import { Delete } from "@nestjs/common";
-import { BeforeInsert, Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BeforeInsert, Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import * as bcrypt from 'bcrypt';
+import { MeetingComment } from "src/meeting/entities/meeting.comment.entity";
 
 @Entity({ schema: 'users', name: 'users'})
 export class User {
@@ -27,6 +28,9 @@ export class User {
 
     @Column({name : 'liked_meeting', type : 'varchar', length : 2047})
     liked_meeting: string;
+
+    @OneToMany(() => MeetingComment, (meeting) => meeting.user)
+    meetingcomments: MeetingComment[];
 
     @CreateDateColumn()
     createdAt: Date;

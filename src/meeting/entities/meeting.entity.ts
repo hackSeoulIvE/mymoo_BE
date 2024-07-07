@@ -2,7 +2,7 @@ import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryG
 import { MeetingComment } from "./meeting.comment.entity";
 
 @Entity()
-export class Meeting {
+export class Meeting{
     @PrimaryGeneratedColumn({name : 'id', type  : 'int'})
     id: number;
 
@@ -12,8 +12,10 @@ export class Meeting {
     @Column({name : 'meeting_description', type : 'varchar', length : 2047})
     meeting_description: string;
 
+    @OneToMany(() => MeetingComment, (comment) => comment.meeting)
+    comments: MeetingComment[];
 
-    @Column({name : 'type', type : 'varchar', nullable : false, length : 255})
+    @Column({name : 'type', type : 'varchar', length : 255})
     type: string;
 
     @Column({name : 'is_flash', type : 'boolean'})
