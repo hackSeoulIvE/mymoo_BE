@@ -1,7 +1,8 @@
 import { Delete } from "@nestjs/common";
-import { BeforeInsert, Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BeforeInsert, Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import * as bcrypt from 'bcrypt';
 import { MeetingComment } from "src/meeting/entities/meeting.comment.entity";
+import { Meeting } from "src/meeting/entities/meeting.entity";
 
 @Entity({ schema: 'users', name: 'users'})
 export class User {
@@ -20,14 +21,16 @@ export class User {
     @Column({name : 'nickname', type : 'varchar', length : 255})
     nickname: string;
     
-    @Column({name : 'made_meeting', type : 'varchar', length : 2047})
-    made_meeting: string;
+    @OneToMany(() => Meeting, (meeting) => meeting.created_by)
+    made_meetings: Meeting[];
     
-    @Column({name : 'posted_meeting', type : 'varchar', length : 2047})
-    posted_meeting: string;
+    @ManyToMany(() => Meeting, (meeting) => meeting.meetingUsers)
+    @JoinTable()
+    posted_meetings: Meeting[];
 
-    @Column({name : 'liked_meeting', type : 'varchar', length : 2047})
-    liked_meeting: string;
+    @ManyToMany(() => Meeting, (meeting) => meeting.likedUsers)
+    @JoinTable()
+    liked_meetings: Meeting[];
 
     @OneToMany(() => MeetingComment, (meeting) => meeting.user)
     meetingcomments: MeetingComment[];

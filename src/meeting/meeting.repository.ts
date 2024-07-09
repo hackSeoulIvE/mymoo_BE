@@ -12,34 +12,15 @@ export class MeetingRepository extends Repository<Meeting> {
     }
 
     async findById(id: number): Promise<Meeting> {
-        return await this.repository.findOne({ where : { id }});
+        return await this.repository.findOne({ where : { id }, relations: ['created_by', 'meetingUsers'] });
     }
 
-    async findByUserId(meeting_name: string): Promise<Meeting> {
-        return await this.repository.findOne({ where : { meeting_name }});
-    }
 
     async findByType(type: string): Promise<Meeting[]> {
         if(type === 'all') {
-            return await this.repository.find();
+            return await this.repository.find({relations: ['created_by']});
         }
-        return await this.repository.find({ where : { type }});
+        return await this.repository.find({ where : { type }, relations: ['created_by'] });
     }
 
-    async joinMeeting(nickname: string, meeting_id: number,  manager: EntityManager ): Promise<void> {
-        const meeting = await this.repository.findOne({ where : { id : meeting_id}});
-        if(!meeting) {
-            throw new NotFoundException();
-        }
-        const meetingUsers = meeting.meetingUsers;
-        
-        let data = JSON.parse(meetingUsers);
-
-        if(!data.includes(nickname)) {
-            data.push(nickname);
-        }
-        meeting.meetingUsers = JSON.stringify(data);
-
-        await manager.save(meeting);
-    }
 }

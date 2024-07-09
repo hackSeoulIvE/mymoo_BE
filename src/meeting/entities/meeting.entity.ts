@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { MeetingComment } from "./meeting.comment.entity";
+import { User } from "src/users/entities/user.entity";
 
 @Entity()
 export class Meeting{
@@ -12,7 +13,7 @@ export class Meeting{
     @Column({name : 'meeting_description', type : 'varchar', length : 2047})
     meeting_description: string;
 
-    @OneToMany(() => MeetingComment, (comment) => comment.meeting)
+    @OneToMany(() => MeetingComment, (comment) => comment.meeting, { cascade: true })
     comments: MeetingComment[];
 
     @Column({name : 'type', type : 'varchar', length : 255})
@@ -21,11 +22,18 @@ export class Meeting{
     @Column({name : 'is_flash', type : 'boolean'})
     is_flash: boolean;
 
-    @Column({name : 'created_by', type : 'varchar', length : 255})
-    created_by: string;
+    @ManyToOne(() => User, (creator) => creator.made_meetings)
+    @JoinColumn()
+    created_by: User;
 
-    @Column({name : 'meetingUsers', type : 'varchar', length : 2047})
-    meetingUsers: string;
+    @ManyToMany(() => User, (user) => user.posted_meetings)
+    meetingUsers: User[];
+
+    @ManyToMany(() => User, (user) => user.liked_meetings)
+    likedUsers: User[];
+
+    @Column({name : "user_count", type : 'int'})
+    user_count: number;
 
     @Column({name : 'deadline', type: 'timestamp' })
     deadline: Date;

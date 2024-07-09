@@ -23,13 +23,15 @@ export class UsersRepository extends Repository<User> {
         return await this.repository.findOne({ where : { nickname }});
     }
 
-    async joinMeeting(user: User, meeting_id: number,  manager: EntityManager ): Promise<void> {
-        let data = JSON.parse(user.posted_meeting);
-        if(!data.includes(meeting_id)) {
-            data.push(meeting_id);
-        }
-        user.posted_meeting = JSON.stringify(data);;
+    async findMadeMeetings(user: User) {
+        return await this.repository.find({ where : { id: user.id }, relations: ['made_meetings']});
+    }
 
-        await manager.save(user);
+    async findPostedMeetings(user: User) {
+        return await this.repository.find({ where : { id: user.id }, relations: ['posted_meetings']});
+    }
+
+    async findLikedMeetings(user: User) {
+        return await this.repository.find({ where : { id: user.id }, relations: ['liked_meetings']});
     }
 }

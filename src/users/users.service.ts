@@ -19,9 +19,6 @@ export class UsersService {
     user.password = signupDto.password; 
     user.email = signupDto.email;
     user.nickname = signupDto.nickname;
-    user.made_meeting = JSON.stringify([]);
-    user.posted_meeting = JSON.stringify([]);
-    user.liked_meeting = JSON.stringify([]);
 
     return await this.userRepository.save(user);
   }
@@ -42,11 +39,15 @@ export class UsersService {
     return this.userRepository.findByNickname(nickname);
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return this.userRepository.update(id, updateUserDto);
+  findMadeMeetings(user: User) {
+    return this.userRepository.findMadeMeetings(user);
   }
 
-  remove(id: number) {
-    return this.userRepository.delete(id);
+  findPostedMeetings(user: User) {
+    return this.userRepository.findPostedMeetings(user);
+  }
+
+  findLikedMeetings(user: User) {
+    return this.userRepository.findLikedMeetings(user);
   }
 }

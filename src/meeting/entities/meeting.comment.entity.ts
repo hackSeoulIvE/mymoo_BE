@@ -10,7 +10,7 @@ export class MeetingComment{
     @Column({name : 'content', type : 'varchar', length : 2047})
     content: string;
     
-    @ManyToOne(() => Meeting, (meeting) => meeting.comments)
+    @ManyToOne(() => Meeting, (meeting) => meeting.comments, { onDelete: 'CASCADE' })
     @JoinColumn()
     meeting: Meeting;
 
@@ -18,11 +18,10 @@ export class MeetingComment{
     @JoinColumn()
     user: User;
 
-    @OneToMany(() => MeetingComment, (childcomment) => childcomment.parent)
-    @JoinColumn()
+    @OneToMany(() => MeetingComment, (childcomment) => childcomment.parent, { cascade: true })
     children: MeetingComment[];
 
-    @ManyToOne(() => MeetingComment, (parentcomment) => parentcomment.children)
+    @ManyToOne(() => MeetingComment, (parentcomment) => parentcomment.children,  { onDelete: 'CASCADE' })
     @JoinColumn()
     parent: MeetingComment | null;
 

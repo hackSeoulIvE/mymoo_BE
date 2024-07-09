@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from 'src/auth/security/auth.guard';
 
@@ -11,22 +11,36 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
+  @ApiOperation({ summary: '모든 유저 조회(개발용으로 사용)' })
   findAll() {
     return this.usersService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  @Get('/mademeeting')
+  @ApiOperation({ summary: '내가 만든 모임 조회' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('token')
+  findMyMeetings(@Req() req: Request) {
+    const { user }:any = req;
+    return this.usersService.findMadeMeetings(user);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+
+  @Get('/postedmeeting')
+  @ApiOperation({ summary: '내가 가입한 모임 조회' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('token')
+  findPostedMeetings(@Req() req: Request) {
+    const { user }:any = req;
+    return this.usersService.findPostedMeetings(user);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
-  }
+  @Get('/likedmeeting')
+  @ApiOperation({ summary: '내가 찜한 모임 조회' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('token')
+  findLikedMeetings(@Req() req: Request) {
+    const { user }:any = req;
+    return this.usersService.findLikedMeetings(user);
+  } 
 }

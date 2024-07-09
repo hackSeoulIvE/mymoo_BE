@@ -5,7 +5,6 @@ import { Meeting } from './entities/meeting.entity';
 import { User } from 'src/users/entities/user.entity';
 import { DataSource } from 'typeorm';
 import { UsersRepository } from 'src/users/users.repository';
-import { differenceInDays } from 'date-fns';
 
 @Injectable()
 export class MeetingService {
@@ -15,7 +14,7 @@ export class MeetingService {
     private readonly dataSource: DataSource
   ) {}
 
-  async create(user_nickname: string, createMeetingDto: CreateMeetingDto) {
+  async create(user: User, createMeetingDto: CreateMeetingDto) {
     const meeting = new Meeting();
     
     // 한국 시간으로 설정
@@ -37,12 +36,15 @@ export class MeetingService {
     else {
       meeting.is_flash = false;
     }
-    meeting.created_by = user_nickname;
-    meeting.meetingUsers = JSON.stringify([user_nickname]);
+    
+    meeting.created_by = user;
+    meeting.meetingUsers = [];
+    meeting.likedUsers = [];
     meeting.deadline = createMeetingDto.deadline;
     meeting.meeting_date = createMeetingDto.meeting_date;
     meeting.min_user = createMeetingDto.min_user;
     meeting.max_user = createMeetingDto.max_user;
+    meeting.user_count = 1;
 
     return await this.meetingRepository.save(meeting);
   }
@@ -60,20 +62,39 @@ export class MeetingService {
   }
 
   async joinMeeting(user: User, meeting_id: number) {
-    const queryRunner = this.dataSource.createQueryRunner();
+    let meeting = await this.meetingRepository.findById(meeting_id);
 
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-    try{
-      await this.usersRepository.joinMeeting(user, meeting_id, queryRunner.manager);
-      await this.meetingRepository.joinMeeting(user.nickname, meeting_id, queryRunner.manager);
-      await queryRunner.commitTransaction();
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
+    if(!meeting) {
+      throw new NotFoundException();
     }
+    if(meeting.max_user <= meeting.user_count) {
+      throw new ForbiddenException();
+    }
+    if(meeting.created_by.id === user.id) {
+      throw new ForbiddenException();
+    }
+    if(meeting.meetingUsers.find((u) => u.id === user.id)) {
+      throw new ForbiddenException();
+    }
+    meeting.meetingUsers.push(user);
+    meeting.user_count += 1;
+
+    return await this.meetingRepository.save(meeting);
+  }
+
+  async leaveMeeting(user: User, meeting_id: number) {
+    let meeting = await this.meetingRepository.findById(meeting_id);
+
+    if(!meeting) {
+      throw new NotFoundException();
+    }
+    if(meeting.created_by.id === user.id) {
+      throw new ForbiddenException();
+    }
+    meeting.meetingUsers = meeting.meetingUsers.filter((u) => u.id !== user.id);
+    meeting.user_count -= 1;
+
+    return await this.meetingRepository.save(meeting);
   }
 
   async remove(user: User, id: number) {
@@ -81,13 +102,28 @@ export class MeetingService {
     if(!meeting) {
       throw new NotFoundException();
     }
-    if(meeting.created_by !== user.nickname) {
+    if(meeting.created_by.id !== user.id) {
       throw new ForbiddenException();
     }
-    const temp = JSON.parse(meeting.meetingUsers);
-    if(temp.length >= meeting.min_user) {
+    if(meeting.user_count >= meeting.min_user) {
       throw new ForbiddenException();
     }
+
+    // const queryRunner = this.dataSource.createQueryRunner();
+
+    // await queryRunner.connect();
+    // await queryRunner.startTransaction();
+    // try {
+    //   await queryRunner.manager.delete(Meeting, id);
+    //   await queryRunner.manager.delete(MeetingComment);
+    //   await queryRunner.commitTransaction();
+    // } catch (err) {
+    //   await queryRunner.rollbackTransaction();
+    // } finally {
+    //   await queryRunner.release();
+    // }
+
+    
     return this.meetingRepository.delete(id);
   }
 }
