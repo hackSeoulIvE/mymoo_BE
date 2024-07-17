@@ -17,10 +17,28 @@ export class MeetingRepository extends Repository<Meeting> {
 
 
     async findByType(type: string): Promise<Meeting[]> {
+        const currentDate = new Date();
         if(type === 'all') {
-            return await this.repository.find({relations: ['created_by']});
+            return await this.repository.find({ 
+                where : { 
+                    meeting_date: MoreThan(currentDate) 
+                }, 
+                relations: ['created_by'],
+                order: {
+                    meeting_date: "ASC"
+                } 
+            });
         }
-        return await this.repository.find({ where : { type }, relations: ['created_by'] });
+        return await this.repository.find({ 
+            where : { 
+                type: type,
+                meeting_date: MoreThan(currentDate) 
+            }, 
+            relations: ['created_by'],
+            order: {
+                meeting_date: "ASC"
+            } 
+        });
     }
 
 }

@@ -50,4 +50,20 @@ export class UsersService {
   findLikedMeetings(user: User) {
     return this.userRepository.findLikedMeetings(user);
   }
+
+  findAllMadeMeetings(user: User) {
+    return this.userRepository.findAllMadeMeetings(user);
+  }
+
+  findAllPostedMeetings(user: User) {
+    return this.userRepository.findAllPostedMeetings(user);
+  }
+
+  findAllMyComments(user: User) {
+    return this.userRepository.findAllMyComments(user);
+  }
+
+  remove(user: User) {
+    return this.userRepository.delete(user.id);
+  }
 }

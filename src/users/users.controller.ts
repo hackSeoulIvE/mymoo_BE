@@ -20,7 +20,7 @@ export class UsersController {
   @ApiOperation({ summary: '내가 만든 모임 조회' })
   @UseGuards(AuthGuard)
   @ApiBearerAuth('token')
-  findMyMeetings(@Req() req: Request) {
+  findMadeMeetings(@Req() req: Request) {
     const { user }:any = req;
     return this.usersService.findMadeMeetings(user);
   }
@@ -42,5 +42,41 @@ export class UsersController {
   findLikedMeetings(@Req() req: Request) {
     const { user }:any = req;
     return this.usersService.findLikedMeetings(user);
-  } 
+  }
+
+  @Get('/mademeeting/all')
+  @ApiOperation({ summary: '내가 만든 모든 모임 조회' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('token')
+  findAllMadeyMeetings(@Req() req: Request) {
+    const { user }:any = req;
+    return this.usersService.findAllMadeMeetings(user);
+  }
+
+  @Get('/postedmeeting/all')
+  @ApiOperation({ summary: '내가 가입한 모든 모임 조회' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('token')
+  findAllPostedMeetings(@Req() req: Request) {
+    const { user }:any = req;
+    return this.usersService.findAllPostedMeetings(user);
+  }
+
+  @Get('/mycomments')
+  @ApiOperation({ summary: '내가 작성한 모든 댓글 조회' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('token')
+  findAllMyComments(@Req() req: Request) {
+    const { user }:any = req;
+    return this.usersService.findAllMyComments(user);
+  }
+
+  @Delete('/delete')
+  @ApiOperation({ summary: '유저 탈퇴' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('token')
+  remove(@Req() req: Request) {
+    const { user }:any = req;
+    return this.usersService.remove(user);
+  }
 }

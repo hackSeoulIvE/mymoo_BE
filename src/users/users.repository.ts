@@ -24,14 +24,57 @@ export class UsersRepository extends Repository<User> {
     }
 
     async findMadeMeetings(user: User) {
-        return await this.repository.find({ where : { id: user.id }, relations: ['made_meetings']});
+        const currentDate = new Date();
+
+        return this.repository.createQueryBuilder('user')
+          .leftJoinAndSelect('user.made_meetings', 'meeting', 'meeting.meeting_date > :currentDate', { currentDate })
+          .where('user.id = :id', { id: user.id })
+          .orderBy('meeting.meeting_date', 'ASC')
+          .getOne();
     }
 
     async findPostedMeetings(user: User) {
-        return await this.repository.find({ where : { id: user.id }, relations: ['posted_meetings']});
+        const currentDate = new Date();
+
+        return this.repository.createQueryBuilder('user')
+          .leftJoinAndSelect('user.posted_meetings', 'meeting', 'meeting.meeting_date > :currentDate', { currentDate })
+          .where('user.id = :id', { id: user.id })
+          .orderBy('meeting.meeting_date', 'ASC')
+          .getOne();
     }
 
     async findLikedMeetings(user: User) {
-        return await this.repository.find({ where : { id: user.id }, relations: ['liked_meetings']});
+        const currentDate = new Date();
+
+        return this.repository.createQueryBuilder('user')
+          .leftJoinAndSelect('user.liked_meetings', 'meeting', 'meeting.meeting_date > :currentDate', { currentDate })
+          .where('user.id = :id', { id: user.id })
+          .orderBy('meeting.meeting_date', 'ASC')
+          .getOne();
     }
+
+    async findAllMadeMeetings(user: User) {
+        return this.repository.createQueryBuilder('user')
+          .leftJoinAndSelect('user.made_meetings', 'meeting')
+          .where('user.id = :id', { id: user.id })
+          .orderBy('meeting.meeting_date', 'DESC')
+          .getOne();
+    }
+
+    async findAllPostedMeetings(user: User) {
+        return this.repository.createQueryBuilder('user')
+          .leftJoinAndSelect('user.posted_meetings', 'meeting')
+          .where('user.id = :id', { id: user.id })
+          .orderBy('meeting.meeting_date', 'DESC')
+          .getOne();
+    }
+
+    async findAllMyComments(user: User) {
+        return this.repository.createQueryBuilder('user')
+          .leftJoinAndSelect('user.meetingcomments', 'comment')
+          .where('user.id = :id', { id: user.id })
+          .orderBy('comment.createdAt', 'DESC')
+          .getOne();
+    }
+
 }

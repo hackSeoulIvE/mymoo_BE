@@ -91,7 +91,11 @@ export class MeetingService {
     if(meeting.created_by.id === user.id) {
       throw new ForbiddenException();
     }
+    const num = meeting.meetingUsers.length;
     meeting.meetingUsers = meeting.meetingUsers.filter((u) => u.id !== user.id);
+    if(num === meeting.meetingUsers.length) {
+      throw new ForbiddenException();
+    }
     meeting.user_count -= 1;
 
     return await this.meetingRepository.save(meeting);
@@ -108,21 +112,6 @@ export class MeetingService {
     if(meeting.user_count >= meeting.min_user) {
       throw new ForbiddenException();
     }
-
-    // const queryRunner = this.dataSource.createQueryRunner();
-
-    // await queryRunner.connect();
-    // await queryRunner.startTransaction();
-    // try {
-    //   await queryRunner.manager.delete(Meeting, id);
-    //   await queryRunner.manager.delete(MeetingComment);
-    //   await queryRunner.commitTransaction();
-    // } catch (err) {
-    //   await queryRunner.rollbackTransaction();
-    // } finally {
-    //   await queryRunner.release();
-    // }
-
     
     return this.meetingRepository.delete(id);
   }
