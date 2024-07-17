@@ -14,7 +14,7 @@ export class MeetingComment{
     @JoinColumn()
     meeting: Meeting;
 
-    @ManyToOne(() => User, (user) => user.meetingcomments, {onDelete : 'SET NULL'})
+    @ManyToOne(() => User, (user) => user.meetingcomments, { onDelete: 'SET NULL' })
     @JoinColumn()
     user: User;
 

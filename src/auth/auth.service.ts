@@ -38,8 +38,8 @@ export class AuthService {
       return { message: '이미 존재하는 아이디입니다.' }
     }
 
-    const userNickname = await this.userService.findByNickname(nickname);
-    if(userNickname) {
+    const userByNickname = await this.userService.findByNickname(nickname);
+    if(userByNickname) {
       return { message: '이미 존재하는 닉네임입니다.' }
     }
 

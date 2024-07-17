@@ -63,7 +63,7 @@ export class UsersService {
     return this.userRepository.findAllMyComments(user);
   }
 
-  remove(user: User) {
+  async remove(user: User) {
     return this.userRepository.delete(user.id);
   }
 }
