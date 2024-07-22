@@ -22,18 +22,25 @@ export namespace AuthDto {
         user_password: string;
     }
 
+    export class email {
+        @ApiProperty({
+            example: "wintery39@korea.ac.kr",
+            description: 'user_email',
+        })
+        email: string;
+    }
     export class checkEmail {
         @ApiProperty({
-            example: 1,
-            description: 'user_id',
+            example: "wintery39@korea.ac.kr",
+            description: 'user_email',
         })
-        id: number;
+        email: string;
         @ApiProperty({
             example: '524372',
-            description: 'code',
+            description: 'verify number',
         })
         @IsString()
-        code: string;
+        verifynumber: string;
     }
 
 

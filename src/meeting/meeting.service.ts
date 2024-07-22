@@ -82,6 +82,23 @@ export class MeetingService {
     return await this.meetingRepository.save(meeting);
   }
 
+  async likeMeeting(user: User, meeting_id: number) {
+    let meeting = await this.meetingRepository.findById(meeting_id);
+
+    if(!meeting) {
+      throw new NotFoundException();
+    }
+    if(meeting.created_by.id === user.id) {
+      throw new ForbiddenException();
+    }
+    if(meeting.likedUsers.find((u) => u.id === user.id)) {
+      throw new ForbiddenException();
+    }
+    meeting.likedUsers.push(user);
+
+    return await this.meetingRepository.save(meeting);
+  }
+
   async leaveMeeting(user: User, meeting_id: number) {
     let meeting = await this.meetingRepository.findById(meeting_id);
 
@@ -97,6 +114,21 @@ export class MeetingService {
       throw new ForbiddenException();
     }
     meeting.user_count -= 1;
+
+    return await this.meetingRepository.save(meeting);
+  }
+
+  async unlikeMeeting(user: User, meeting_id: number) {
+    let meeting = await this.meetingRepository.findById(meeting_id);
+
+    if(!meeting) {
+      throw new NotFoundException();
+    }
+    const num = meeting.meetingUsers.length;
+    meeting.likedUsers = meeting.likedUsers.filter((u) => u.id !== user.id);
+    if(num === meeting.likedUsers.length) {
+      throw new ForbiddenException();
+    }
 
     return await this.meetingRepository.save(meeting);
   }

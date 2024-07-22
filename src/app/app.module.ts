@@ -11,6 +11,8 @@ import { JwtStrategy } from 'src/auth/security/passport.jwt.strategy';
 import { Meeting } from 'src/meeting/entities/meeting.entity';
 import { MeetingModule } from 'src/meeting/meeting.module';
 import { MeetingComment } from 'src/meeting/entities/meeting.comment.entity';
+import { MailModule } from 'src/mail/mail.module';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
@@ -34,9 +36,15 @@ import { MeetingComment } from 'src/meeting/entities/meeting.comment.entity';
       keepConnectionAlive: true,
       timezone: '+09:00',
     }),
+    CacheModule.register({
+      ttl: 60000,
+      max: 100,
+      isGlobal: true,
+    }),
     UsersModule,
     AuthModule,
     MeetingModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -20,4 +20,16 @@ export class AuthController {
   signup(@Body() signupDto: AuthDto.SignUp) {
     return this.authService.signup(signupDto);
   }
+
+  @Post('SendemailVerify')
+  @ApiOperation({ summary: '이메일 인증번호 전송' })
+  sendEmailVerify(@Body() emailDto: AuthDto.email) {
+    return this.authService.sendEmailVerify(emailDto.email);
+  }
+
+  @Post('Verify')
+  @ApiOperation({ summary: '이메일 인증번호 확인' })
+  verify(@Body() verifyDto: AuthDto.checkEmail) {
+    return this.authService.verifyEmail(verifyDto.email, verifyDto.verifynumber);
+  }
 }

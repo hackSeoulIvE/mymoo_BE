@@ -41,6 +41,16 @@ export class MeetingController {
     return await this.meetingService.joinMeeting(user, meeting_id);
   }
 
+  @Patch('/like')
+  @ApiOperation({ summary: '모임 찜하기' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('token')
+  async likeMeeting(@Req() req: Request, @Body() meetingIdDto: MeetingIdDto) {
+    const meeting_id = meetingIdDto.meeting_id;
+    const { user }:any = req;
+    return await this.meetingService.likeMeeting(user, meeting_id);
+  }
+
   @Patch('/leave')
   @ApiOperation({ summary: '모임 나가기' })
   @UseGuards(AuthGuard)
@@ -50,6 +60,17 @@ export class MeetingController {
     const { user }:any = req;
     return await this.meetingService.leaveMeeting(user, meeting_id);
   }
+
+  @Patch('/unlike')
+  @ApiOperation({ summary: '모임 찜 취소' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('token')
+  async unlikeMeeting(@Req() req: Request, @Body() meetingIdDto: MeetingIdDto) {
+    const meeting_id = meetingIdDto.meeting_id;
+    const { user }:any = req;
+    return await this.meetingService.unlikeMeeting(user, meeting_id);
+  }
+
 
 
   @Delete('/delete')

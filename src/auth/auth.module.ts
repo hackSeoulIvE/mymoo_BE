@@ -8,6 +8,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { UsersModule } from 'src/users/users.module';
 import { ConfigModule } from '@nestjs/config';
+import { MailModule } from 'src/mail/mail.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { ConfigModule } from '@nestjs/config';
       signOptions: { expiresIn: '1d' },
     }),
     PassportModule,
-    UsersModule
+    UsersModule,
+    MailModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
