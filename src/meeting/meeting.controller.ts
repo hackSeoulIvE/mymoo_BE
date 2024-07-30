@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Query } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { MeetingService } from './meeting.service';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
 import { AuthGuard } from 'src/auth/security/auth.guard';
@@ -26,9 +26,12 @@ export class MeetingController {
   }
 
   @Get('type:type')
-  @ApiOperation({ summary: "타입으로 모임 조회 ['all', 'play', 'eat', 'extra', 'study']" })
-  findByType(@Param('type') type: string) {
-    return this.meetingService.findByType(type);
+  @ApiOperation({ summary: "모임 조회 ['all', 'play', 'eat', 'extra', 'study'] / isnew가 true면 새로 작성된 순으로 정렬 (default오 false는 모임날짜 기준)" })
+  @ApiQuery({ name: 'stdate', required: false })
+  @ApiQuery({ name: 'eddate', required: false })
+  @ApiQuery({ name: 'new', required: false })
+  findMeeting(@Param('type') type: string, @Query('stdate') stdate?: Date, @Query('eddate') eddate?: Date, @Query('new') isnew?: boolean) {
+    return this.meetingService.findMeeting(type, stdate, eddate, isnew);
   }
 
   @Patch('/join')
@@ -60,7 +63,8 @@ export class MeetingController {
     const { user }:any = req;
     return await this.meetingService.leaveMeeting(user, meeting_id);
   }
-
+  
+  /*
   @Patch('/unlike')
   @ApiOperation({ summary: '모임 찜 취소' })
   @UseGuards(AuthGuard)
@@ -70,7 +74,7 @@ export class MeetingController {
     const { user }:any = req;
     return await this.meetingService.unlikeMeeting(user, meeting_id);
   }
-
+  */
 
 
   @Delete('/delete')

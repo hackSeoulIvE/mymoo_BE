@@ -21,6 +21,14 @@ export class AuthController {
     return this.authService.signup(signupDto);
   }
 
+  @Get('Checktoken')
+  @ApiOperation({ summary: '토큰 확인' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('token')
+  checkToken(@Req() req: Request) {
+    return "인증된 토큰입니다.";
+  }
+
   @Post('SendemailVerify')
   @ApiOperation({ summary: '이메일 인증번호 전송' })
   sendEmailVerify(@Body() emailDto: AuthDto.email) {

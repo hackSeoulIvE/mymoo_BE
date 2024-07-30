@@ -1,4 +1,4 @@
-import { EntityManager, MoreThan, Repository } from 'typeorm';
+import { Between, EntityManager, MoreThan, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Meeting } from './entities/meeting.entity';
@@ -12,32 +12,54 @@ export class MeetingRepository extends Repository<Meeting> {
     }
 
     async findById(id: number): Promise<Meeting> {
-        return await this.repository.findOne({ where : { id }, relations: ['created_by', 'meetingUsers'] });
+        return await this.repository.findOne({ where : { id }, relations: ['created_by', 'meetingUsers', 'likedUsers'] });
     }
 
 
-    async findByType(type: string): Promise<Meeting[]> {
-        const currentDate = new Date();
-        if(type === 'all') {
-            return await this.repository.find({ 
-                where : { 
-                    meeting_date: MoreThan(currentDate) 
-                }, 
-                relations: ['created_by'],
-                order: {
-                    meeting_date: "ASC"
-                } 
-            });
+    async findMeeting(type: string, startdate?: Date, eddate?: Date, isnew?: boolean): Promise<Meeting[]> {
+        const current_date = new Date();
+        let stdate = new Date(startdate);
+        let wherecondtion, ordercondtion;
+        
+        if(!startdate || stdate.getTime() < current_date.getTime()) {
+            stdate = current_date;
         }
+
+
+        if(type === 'all') {
+            if(eddate){
+                wherecondtion = {meeting_date: Between(stdate, eddate)};
+            }
+            else{
+                wherecondtion = {meeting_date: MoreThan(stdate)};
+            }
+        }
+        else{
+            if(eddate){
+                wherecondtion = {
+                    type: type, 
+                    meeting_date: Between(stdate, eddate),
+                };
+            }
+            else{
+                wherecondtion = {
+                    type: type,
+                    meeting_date: MoreThan(stdate),
+                };
+            }
+        }
+
+        if(isnew) {
+            ordercondtion = {createdAt: "ASC"};
+        }
+        else{
+            ordercondtion = {meeting_date: "DESC"};
+        }
+
         return await this.repository.find({ 
-            where : { 
-                type: type,
-                meeting_date: MoreThan(currentDate) 
-            }, 
+            where : wherecondtion, 
             relations: ['created_by'],
-            order: {
-                meeting_date: "ASC"
-            } 
+            order: ordercondtion, 
         });
     }
 

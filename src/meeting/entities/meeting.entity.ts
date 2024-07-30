@@ -1,6 +1,7 @@
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { MeetingComment } from "./meeting.comment.entity";
 import { User } from "src/users/entities/user.entity";
+import { Min } from "class-validator";
 
 @Entity()
 export class Meeting{
