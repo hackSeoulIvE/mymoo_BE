@@ -6,6 +6,7 @@ import { query } from 'express';
 import { MeetingRepository } from 'src/meeting/meeting.repository';
 import { DataSource } from 'typeorm';
 import { AuthDto } from 'src/auth/dto/auth.dto';
+import { SocialSignupDto } from 'src/auth/dto/social.signup.dto';
 
 @Injectable()
 export class UsersService {
@@ -23,6 +24,17 @@ export class UsersService {
     return await this.userRepository.save(user);
   }
 
+  async socialSignup(socialSignupDto: SocialSignupDto) {
+    const user = new User();
+    
+    user.email = socialSignupDto.email;
+    user.nickname = socialSignupDto.nickname;
+    user.isSocialAccount = true;
+    user.externalId = socialSignupDto.externalId;
+
+    return await this.userRepository.save(user);
+  }
+
   findAll() {
     return this.userRepository.find();
   }
@@ -33,6 +45,10 @@ export class UsersService {
 
   findByUserId(user_id: string) {
     return this.userRepository.findByUserId(user_id);
+  }
+
+  findByEmail(email: string) {
+    return this.userRepository.findByEmail(email);
   }
 
   findByNickname(nickname: string) {

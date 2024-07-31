@@ -23,6 +23,10 @@ export class UsersRepository extends Repository<User> {
         return await this.repository.findOne({ where : { nickname }});
     }
 
+    async findByEmail(email: string): Promise<User> {
+        return await this.repository.findOne({ where : { email }});
+    }
+
     async findMadeMeetings(user: User) {
         const currentDate = new Date();
 

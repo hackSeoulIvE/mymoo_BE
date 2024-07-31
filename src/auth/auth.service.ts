@@ -6,6 +6,7 @@ import { AuthDto } from './dto/auth.dto';
 import { MailService } from 'src/mail/mail.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { SocialSignupDto } from './dto/social.signup.dto';
 
 @Injectable()
 export class AuthService {
@@ -73,6 +74,19 @@ export class AuthService {
     } else {
       return { message: '인증번호가 일치하지 않습니다.' }
     }
+  }
+
+  async socialSignup(socialSignupdto: SocialSignupDto){
+    const chkUser = await this.userService.findByEmail(socialSignupdto.email);
+
+    if(chkUser) {
+      if(chkUser.isSocialAccount) {
+        return chkUser;
+      }
+      return { message: '이미 가입된 이메일입니다.' }
+    }
+
+    return await this.userService.socialSignup(socialSignupdto);
   }
 
   private generateRandomNumber(): number {

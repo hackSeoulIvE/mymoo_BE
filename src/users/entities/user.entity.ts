@@ -9,10 +9,10 @@ export class User {
     @PrimaryGeneratedColumn({name : 'id', type  : 'int'})
     id: number;
 
-    @Column({name : 'user_id', type : 'varchar', length : 255})
+    @Column({name : 'user_id', type : 'varchar', length : 255, nullable : true})
     user_id: string;
 
-    @Column({name : 'password', type : 'varchar', length : 255})
+    @Column({name : 'password', type : 'varchar', length : 255, nullable : true})
     password: string;
 
     @Column({name : 'email', type : 'varchar', length : 255})
@@ -34,6 +34,12 @@ export class User {
 
     @OneToMany(() => MeetingComment, (meeting) => meeting.user)
     meetingcomments: MeetingComment[];
+
+    @Column({name : "isSocialAccont", type : 'boolean', default : false})
+    isSocialAccount: boolean;
+
+    @Column({name : "externalId", type : 'varchar', length : 255, nullable : true, default : null})
+    externalId: string;
 
     @CreateDateColumn()
     createdAt: Date;
