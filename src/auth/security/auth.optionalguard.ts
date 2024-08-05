@@ -7,7 +7,4 @@ export class OptionalAuthGuard extends NestAuthGuard('jwt') {
     handleRequest(err, user, info, context: ExecutionContext) {
         return user;
     }
-    canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
-        return true;
-      }
 }

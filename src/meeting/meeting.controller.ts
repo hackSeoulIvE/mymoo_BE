@@ -5,6 +5,7 @@ import { CreateMeetingDto } from './dto/create-meeting.dto';
 import { AuthGuard } from 'src/auth/security/auth.guard';
 import { MeetingIdDto } from './dto/meeting_id.dto';
 import { OptionalAuthGuard } from 'src/auth/security/auth.optionalguard';
+import { User } from 'src/users/entities/user.entity';
 
 @ApiTags('Meeting')
 @Controller('meeting')
@@ -27,13 +28,18 @@ export class MeetingController {
   }
 
   @Get('type:type')
+  @UseGuards(OptionalAuthGuard)
+  @ApiBearerAuth('token')
   @ApiOperation({ summary: "모임 조회 ['all', 'play', 'eat', 'extra', 'study'] / isnew가 true면 새로 작성된 순으로 정렬 (default오 false는 모임날짜 기준)" })
   @ApiQuery({ name: 'searchtype', required: false })
   @ApiQuery({ name: 'keyword', required: false })
   @ApiQuery({ name: 'stdate', required: false })
   @ApiQuery({ name: 'eddate', required: false })
   @ApiQuery({ name: 'new', required: false })
-  findMeeting(@Param('type') type: string, @Query('searchtype') searchtype?: string, @Query('keyword') keyword?: string,@Query('stdate') stdate?: Date, @Query('eddate') eddate?: Date, @Query('new') isnew?: boolean) {
+  findMeeting(@Req() req, @Param('type') type: string, @Query('searchtype') searchtype?: string, @Query('keyword') keyword?: string,@Query('stdate') stdate?: Date, @Query('eddate') eddate?: Date, @Query('new') isnew?: boolean) {
+    if(req.user){
+      return this.meetingService.findMeeting(type, searchtype, keyword, stdate, eddate, isnew, req.user);
+    }
     return this.meetingService.findMeeting(type, searchtype, keyword, stdate, eddate, isnew);
   }
 
