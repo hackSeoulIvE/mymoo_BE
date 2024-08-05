@@ -7,6 +7,7 @@ import { MeetingRepository } from 'src/meeting/meeting.repository';
 import { DataSource } from 'typeorm';
 import { AuthDto } from 'src/auth/dto/auth.dto';
 import { SocialSignupDto } from 'src/auth/dto/social.signup.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -32,6 +33,11 @@ export class UsersService {
     user.isSocialAccount = true;
     user.externalId = socialSignupDto.externalId;
 
+    return await this.userRepository.save(user);
+  }
+
+  async updatepassword(user: User, password: string) {
+    user.password = await bcrypt.hashSync(password, 10);
     return await this.userRepository.save(user);
   }
 

@@ -17,7 +17,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
           }
         },
         defaults: {
-          from: `'Waa' <${process.env.EMAIL_ADDRESS}>`,
+          from: `'Kuconut' <${process.env.EMAIL_ADDRESS}>`,
         },
         template: {
           dir: path.join(__dirname, 'templates'),

@@ -43,6 +43,42 @@ export namespace AuthDto {
         verifynumber: string;
     }
 
+    export class forgotPassword {
+        @ApiProperty({
+            example: "honggildong",
+            description: 'user_id',
+        })
+        @IsString()
+        user_id: string;
+
+        @ApiProperty({
+            example: "wintery39@korea.ac.kr",
+            description: 'user_email',
+        })
+        email: string;
+    }
+
+    export class checkForgotPassword {
+        @ApiProperty({
+            example: "honggildong",
+            description: 'user_id',
+        })
+        @IsString()
+        user_id: string;
+
+        @ApiProperty({
+            example: "wintery39@korea.ac.kr",
+            description: 'user_email',
+        })
+        email: string;
+        @ApiProperty({
+            example: '524372',
+            description: 'verify number',
+        })
+        @IsString()
+        verifynumber: string;
+    }
+
 
     export class SignUp {
         @ApiProperty({

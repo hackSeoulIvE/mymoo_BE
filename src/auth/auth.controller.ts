@@ -47,9 +47,33 @@ export class AuthController {
     return this.authService.sendEmailVerify(emailDto.email);
   }
 
+  @Post('SendemailForgotId')
+  @ApiOperation({ summary: '아이디 찾기 이메일 전송' })
+  sendEmailForgotId(@Body() emailDto: AuthDto.email) {
+    return this.authService.sendEmailForgotId(emailDto.email);
+  }
+
+  @Post('SendemailForgotPassword')
+  @ApiOperation({ summary: '비밀번호 찾기 이메일 전송' })
+  sendEmailForgotPassword(@Body() emailDto: AuthDto.forgotPassword) {
+    return this.authService.sendEmailForgotPassword(emailDto.user_id, emailDto.email);
+  }
+
   @Post('Verify')
   @ApiOperation({ summary: '이메일 인증번호 확인' })
   verify(@Body() verifyDto: AuthDto.checkEmail) {
     return this.authService.verifyEmail(verifyDto.email, verifyDto.verifynumber);
+  }
+
+  @Post('ForgotId')
+  @ApiOperation({ summary: '아이디 찾기' })
+  forgotId(@Body() forgotIdDto: AuthDto.checkEmail) {
+    return this.authService.verifyForgotId(forgotIdDto.email, forgotIdDto.verifynumber);
+  }
+
+  @Patch('ForgotPassword')
+  @ApiOperation({ summary: '비밀번호 찾기' })
+  forgotPassword(@Body() forgotPasswordDto: AuthDto.checkForgotPassword) {
+    return this.authService.verifyForgotPassword(forgotPasswordDto.user_id, forgotPasswordDto.email, forgotPasswordDto.verifynumber);
   }
 }

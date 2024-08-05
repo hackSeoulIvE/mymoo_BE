@@ -8,11 +8,11 @@ import { verify } from 'crypto';
 export class MailService {
   constructor(private readonly mailerService: MailerService) {}
 
-  async sendEmailVerify(user_email: string, verifynumber: string) {
+  async sendEmailVerify(user_email: string, verifynumber: string, title: string) {
     await this.mailerService
     .sendMail({
       to: user_email,
-      subject: '가입 인증 메일',
+      subject: title,
 
       template: './emailverify',
       

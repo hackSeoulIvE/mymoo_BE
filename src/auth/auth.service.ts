@@ -70,6 +70,7 @@ export class AuthService {
   }
 
   async sendEmailVerify(email: string) {
+    this.cacheManager.del(email);
     const user = await this.userService.findByEmail(email);
     if(user) {
       return { message: '이미 가입된 이메일입니다.' }
@@ -77,8 +78,42 @@ export class AuthService {
 
     const verifynum = this.generateRandomNumber().toString();
 
-    await this.cacheManager.set(email, verifynum);
-    await this.mailService.sendEmailVerify(email, verifynum);
+    await this.cacheManager.set(email, verifynum+'new');
+    await this.mailService.sendEmailVerify(email, verifynum, "가입 인증 메일");
+
+    return { message: '이메일로 인증번호를 전송하였습니다.' }
+  }
+
+  async sendEmailForgotId(email: string) {
+    this.cacheManager.del(email);
+    const user = await this.userService.findByEmail(email);
+    if(!user) {
+      return { message: '가입되지 않은 이메일입니다.' }
+    }
+
+    const verifynum = this.generateRandomNumber().toString();
+
+    await this.cacheManager.set(email, verifynum+'forgotid');
+    await this.mailService.sendEmailVerify(email, verifynum, "아이디 찾기 인증 메일");
+
+    return { message: '이메일로 인증번호를 전송하였습니다.' }
+  }
+
+  async sendEmailForgotPassword(userid:string, email: string) {
+    this.cacheManager.del(email);
+    const user = await this.userService.findByEmail(email);
+    if(!user) {
+      return { message: '가입되지 않은 이메일입니다.' }
+    }
+    
+    if(user.user_id !== userid) {
+      return { message: '아이디가 일치하지 않습니다.' }
+    }
+
+    const verifynum = this.generateRandomNumber().toString();
+
+    await this.cacheManager.set(email, verifynum+'forgotpassword');
+    await this.mailService.sendEmailVerify(email, verifynum, "비밀번호 찾기 인증 메일");
 
     return { message: '이메일로 인증번호를 전송하였습니다.' }
   }
@@ -89,13 +124,51 @@ export class AuthService {
     if(!cacheVerifynum) {
       return { message: '인증번호가 만료되었거나 입력되지 않은 이메일입니다.' }
     }
-    if(verifynum === cacheVerifynum) {
+    if(verifynum+'new' === cacheVerifynum) {
       await this.cacheManager.del(email);
       return { message: '인증되었습니다.' }
     } else {
       return { message: '인증번호가 일치하지 않습니다.' }
     }
   }
+
+  async verifyForgotId(email: string, verifynum: string) {
+    const cacheVerifynum = await this.cacheManager.get(email);
+    let user = await this.userService.findByEmail(email);
+
+    if(!cacheVerifynum) {
+      return { message: '인증번호가 만료되었거나 입력되지 않은 이메일입니다.' }
+    }
+    if(verifynum+'forgotid' === cacheVerifynum) {
+      await this.cacheManager.del(email);
+      
+      return { message: `인증되었습니다. 아이디는 ${user.user_id}입니다.` }
+    } else {
+      return { message: '인증번호가 일치하지 않습니다.' }
+    }
+  }
+
+  async verifyForgotPassword(userid: string, email: string, verifynum: string) {
+    const cacheVerifynum = await this.cacheManager.get(email);
+    const user = await this.userService.findByEmail(email);
+
+    if(user.user_id !== userid) {
+      return { message: '아이디가 일치하지 않습니다.' }
+    }
+
+    if(!cacheVerifynum) {
+      return { message: '인증번호가 만료되었거나 입력되지 않은 이메일입니다.' }
+    }
+    if(verifynum+'forgotpassword' === cacheVerifynum) {
+      await this.cacheManager.del(email);
+      const tempPassword = this.generateRandomNumber().toString();
+      await this.userService.updatepassword(user, tempPassword);
+      return { message: `인증되었습니다. 임시 비밀번호는 ${tempPassword}입니다. 반드시 비밀번호를 해주세요.` }
+    } else {
+      return { message: '인증번호가 일치하지 않습니다.' }
+    }
+  }
+
 
   async socialSignup(socialSignupdto: SocialSignupDto){
     const chkUser = await this.userService.findByEmail(socialSignupdto.email);
