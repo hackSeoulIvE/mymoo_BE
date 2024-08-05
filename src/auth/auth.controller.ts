@@ -21,6 +21,18 @@ export class AuthController {
     return this.authService.signup(signupDto);
   }
 
+  @Get('Checkid:chk_user_id')
+  @ApiOperation({ summary: '아이디 중복확인' })
+  chkid(@Param('chk_user_id') chk_user_id: string) {
+    return this.authService.chkid(chk_user_id);
+  }
+
+  @Get('Checknickname:chk_nickname')
+  @ApiOperation({ summary: '닉네임 중복확인' })
+  chknickname(@Param('chk_nickname') chk_nickname: string) {
+    return this.authService.chknickname(chk_nickname);
+  }
+
   @Get('Checktoken')
   @ApiOperation({ summary: '토큰 확인' })
   @UseGuards(AuthGuard)

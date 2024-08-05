@@ -62,12 +62,16 @@ export class MeetingService {
     return this.meetingRepository.findById(id);
   }
 
-  findMeeting(type: string, stdate?: Date, eddate?: Date, isnew?: boolean) {
+  findMeeting(type: string, searchtype?: string, keyword?: string, stdate?: Date, eddate?: Date, isnew?: boolean) {
     const possible_type = ['all', 'play', 'eat', 'extra', 'study'];
+    const poosible_search = ['meeting_name_description', 'created_by'];
     if(!possible_type.includes(type)) {
-      throw new NotFoundException();
+      throw new NotFoundException('1');
     }
-    return this.meetingRepository.findMeeting(type, stdate, eddate, isnew);
+    if(searchtype && !poosible_search.includes(searchtype)) {
+      throw new NotFoundException('2');
+    }
+    return this.meetingRepository.findMeeting(type, searchtype, keyword, stdate, eddate, isnew);
   }
 
   async joinMeeting(user: User, meeting_id: number) {

@@ -16,51 +16,44 @@ export class MeetingRepository extends Repository<Meeting> {
     }
 
 
-    async findMeeting(type: string, startdate?: Date, eddate?: Date, isnew?: boolean): Promise<Meeting[]> {
+    async findMeeting(type: string, searchtype?: string, keyword?: string, startdate?: Date, eddate?: Date, isnew?: boolean): Promise<Meeting[]> {
         const current_date = new Date();
         let stdate = new Date(startdate);
         let wherecondtion, ordercondtion;
+        const queryBuilder = this.repository.createQueryBuilder('meeting')
+
+        queryBuilder.leftJoinAndSelect('meeting.created_by', 'created_by');
         
         if(!startdate || stdate.getTime() < current_date.getTime()) {
             stdate = current_date;
         }
 
-
-        if(type === 'all') {
-            if(eddate){
-                wherecondtion = {meeting_date: Between(stdate, eddate)};
-            }
-            else{
-                wherecondtion = {meeting_date: MoreThan(stdate)};
-            }
+        if(type !== 'all') {
+            queryBuilder.where('type = :type', { type: type });
+        }
+        if(eddate){
+            queryBuilder.andWhere('meeting_date BETWEEN :stdate AND :eddate', { stdate: stdate, eddate: eddate });
         }
         else{
-            if(eddate){
-                wherecondtion = {
-                    type: type, 
-                    meeting_date: Between(stdate, eddate),
-                };
-            }
-            else{
-                wherecondtion = {
-                    type: type,
-                    meeting_date: MoreThan(stdate),
-                };
+            queryBuilder.andWhere('meeting_date > :stdate', { stdate: stdate });
+        }
+        
+        if(searchtype) {
+            if(searchtype === 'meeting_name_description') {
+                queryBuilder.andWhere('meeting_name LIKE :keyword OR meeting_description LIKE :keyword', { keyword: `%${keyword}%` });
+            }else if(searchtype === 'created_by') {
+                queryBuilder.andWhere('created_by.nickname LIKE :keyword', { keyword: `%${keyword}%` });
             }
         }
+
 
         if(isnew) {
-            ordercondtion = {createdAt: "ASC"};
+            queryBuilder.orderBy('created_at', 'ASC');
         }
         else{
-            ordercondtion = {meeting_date: "DESC"};
+            queryBuilder.orderBy('meeting_date', 'DESC');
         }
 
-        return await this.repository.find({ 
-            where : wherecondtion, 
-            relations: ['created_by'],
-            order: ordercondtion, 
-        });
+        return await queryBuilder.getMany();
     }
-
 }

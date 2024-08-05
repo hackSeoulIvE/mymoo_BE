@@ -53,7 +53,28 @@ export class AuthService {
     return await this.userService.signup(signupDto);
   }
 
+  async chkid(user_id: string) {
+    const user = await this.userService.findByUserId(user_id);
+    if(user) {
+      return { message: '이미 존재하는 아이디입니다.' }
+    }
+    return { message: '사용 가능한 아이디입니다.' }
+  }
+
+  async chknickname(nickname: string) {
+    const user = await this.userService.findByNickname(nickname);
+    if(user) {
+      return { message: '이미 존재하는 닉네임입니다.' }
+    }
+    return { message: '사용 가능한 닉네임입니다.' }
+  }
+
   async sendEmailVerify(email: string) {
+    const user = await this.userService.findByEmail(email);
+    if(user) {
+      return { message: '이미 가입된 이메일입니다.' }
+    }
+
     const verifynum = this.generateRandomNumber().toString();
 
     await this.cacheManager.set(email, verifynum);
