@@ -41,6 +41,16 @@ export class UsersService {
     return await this.userRepository.save(user);
   }
 
+  async updateRefresh(user: User, refreshToken: string, changeexpired: boolean) {
+    user.refreshtoken = refreshToken;
+    if(changeexpired) {
+      const now = new Date();
+      const expires = new Date(now.getTime() + 24*60*60*1000*180);
+      user.refreshTokenExpiresIn = expires;
+    }
+    return await this.userRepository.save(user);
+  }
+
   findAll() {
     return this.userRepository.find();
   }
@@ -59,6 +69,10 @@ export class UsersService {
 
   findByNickname(nickname: string) {
     return this.userRepository.findByNickname(nickname);
+  }
+
+  findByRefreshToken(refreshToken: string) {
+    return this.userRepository.findByRefreshToken(refreshToken);
   }
 
   findMadeMeetings(user: User) {

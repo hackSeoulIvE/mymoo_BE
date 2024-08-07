@@ -130,7 +130,14 @@ export namespace AuthDto {
         @IsString()
         @Length(4, 20)
         password: string;
+    }
 
-
+    export class Refresh {
+        @ApiProperty({
+            example: 'refreshToken',
+            description: 'refreshToken',
+        })
+        @IsString()
+        refreshToken: string;
     }
 }

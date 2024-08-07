@@ -20,6 +20,12 @@ export class User {
     
     @Column({name : 'nickname', type : 'varchar', length : 255})
     nickname: string;
+
+    @Column({name : 'refreshtoken', type : 'varchar', length : 255, nullable : true})
+    refreshtoken: string;
+
+    @Column({name: 'refreshTokenExpiresIn', type: 'timestamp', nullable: true})
+    refreshTokenExpiresIn: Date;
     
     @OneToMany(() => Meeting, (meeting) => meeting.created_by)
     made_meetings: Meeting[];

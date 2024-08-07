@@ -21,6 +21,12 @@ export class AuthController {
     return this.authService.signup(signupDto);
   }
 
+  @Post('Refresh')
+  @ApiOperation({ summary: '토큰 재발급' })
+  refresh(@Body() refresh: AuthDto.Refresh) {
+    return this.authService.refreshToAccessToken(refresh.refreshToken);
+  }
+
   @Get('Checkid:chk_user_id')
   @ApiOperation({ summary: '아이디 중복확인' })
   chkid(@Param('chk_user_id') chk_user_id: string) {

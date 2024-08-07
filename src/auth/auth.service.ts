@@ -7,6 +7,7 @@ import { MailService } from 'src/mail/mail.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { SocialSignupDto } from './dto/social.signup.dto';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -30,11 +31,14 @@ export class AuthService {
       return { message: '아이디 또는 비밀번호를 확인해주세요.' }
     }
 
-    const payload = { id: user.id};
+    const payload = { id: user.id, nickname: user.nickname};
 
     const accessToken = this.jwtService.sign(payload);
+    const refreshToken = await this.generateRefresh(user);
 
-    return {access_Token: accessToken};
+    await this.userService.updateRefresh(user, refreshToken, true);
+
+    return {access_Token: accessToken, refresh_Token: refreshToken};
   }
 
   async signup(signupDto: AuthDto.SignUp) {
@@ -51,6 +55,22 @@ export class AuthService {
     }
 
     return await this.userService.signup(signupDto);
+  }
+
+  async refreshToAccessToken(refreshToken: string) {
+    const user = await this.userService.findByRefreshToken(refreshToken);
+    
+    if(!user) {
+      return { message: '유효하지 않은 토큰입니다.' }
+    }
+    const payload = { id: user.id, nickname: user.nickname};
+
+    const accessToken = this.jwtService.sign(payload);
+    const newRefreshToken = await this.generateRefresh(user);
+
+    await this.userService.updateRefresh(user, newRefreshToken, false);
+
+    return {access_Token: accessToken, refresh_Token: newRefreshToken};
   }
 
   async chkid(user_id: string) {
@@ -181,6 +201,18 @@ export class AuthService {
     }
 
     return await this.userService.socialSignup(socialSignupdto);
+  }
+
+  private async generateRefresh(user: User) {
+
+    const payload = { id: user.id};
+
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: process.env.REFRESH_TOKEN_SECRET,
+      expiresIn: '180d',
+    });
+
+    return refreshToken;
   }
 
   private generateRandomNumber(): number {

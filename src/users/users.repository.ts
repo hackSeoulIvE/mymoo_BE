@@ -27,6 +27,11 @@ export class UsersRepository extends Repository<User> {
         return await this.repository.findOne({ where : { email }});
     }
 
+    async findByRefreshToken(refreshToken: string): Promise<User> {
+        const now = new Date();
+        return await this.repository.findOne({ where : { refreshtoken : refreshToken}});
+    }
+
     async findMadeMeetings(user: User) {
         const currentDate = new Date();
 
