@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Query } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MeetingService } from './meeting.service';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
 import { AuthGuard } from 'src/auth/security/auth.guard';
@@ -14,6 +14,10 @@ export class MeetingController {
 
   @Post('make_meeting')
   @ApiOperation({ summary: '모임 만들기' })
+  @ApiResponse({ status: 403.1, description: '날짜가 올바르지 않을 때' })
+  @ApiResponse({ status: 403.2, description: '인원수 설정이 올바르지 않을 때' })
+  @ApiResponse({ status: 401, description: '로그인 없을 시'})
+  @ApiResponse({ status: 200, description: '그 외 정상적인 응답' })
   @UseGuards(AuthGuard)
   @ApiBearerAuth('token')
   create(@Req() req: Request, @Body() createMeetingDto: CreateMeetingDto) {
@@ -28,6 +32,9 @@ export class MeetingController {
   }
 
   @Get('type:type')
+  @ApiResponse({ status: 403.1, description: 'type이 all, play, eat, extra, study 가 아닐 때' })
+  @ApiResponse({ status: 403.2, description: 'searchtype이 meeting_name_description, created_by 가 아닐 때' })
+  @ApiResponse({ status: 200, description: '이 외 정상적 응답' })
   @UseGuards(OptionalAuthGuard)
   @ApiBearerAuth('token')
   @ApiOperation({ summary: "모임 조회 ['all', 'play', 'eat', 'extra', 'study'] / isnew가 true면 새로 작성된 순으로 정렬 (default오 false는 모임날짜 기준)" })
@@ -45,6 +52,11 @@ export class MeetingController {
 
   @Patch('/join')
   @ApiOperation({ summary: '모임 참가' })
+  @ApiResponse({ status: 403.1, description: 'deadline 이후일 때' })
+  @ApiResponse({ status: 404, description: '미팅이 존재하지 않을 때' })
+  @ApiResponse({ status: 403.2, description: '최대 인원수일 떄' })
+  @ApiResponse({ status: 401, description: '로그인 없을 시'})
+  @ApiResponse({ status: 200, description: '이 외 정상적 응답' })
   @UseGuards(AuthGuard)
   @ApiBearerAuth('token')
   async joinMeeting(@Req() req: Request, @Body() meetingIdDto: MeetingIdDto) {
@@ -55,6 +67,10 @@ export class MeetingController {
 
   @Patch('/like')
   @ApiOperation({ summary: '모임 찜하기' })
+  @ApiResponse({ status: 404, description: '미팅이 존재하지 않을 떄' })
+  @ApiResponse({ status: 403, description: '모임을 만든 사용자일 때' })
+  @ApiResponse({ status: 401, description: '로그인 없을 시'})
+  @ApiResponse({ status: 200, description: '이 외 정상적 응답' })
   @UseGuards(AuthGuard)
   @ApiBearerAuth('token')
   async likeMeeting(@Req() req: Request, @Body() meetingIdDto: MeetingIdDto) {
@@ -65,6 +81,11 @@ export class MeetingController {
 
   @Patch('/leave')
   @ApiOperation({ summary: '모임 나가기' })
+  @ApiResponse({ status: 404, description: '미팅이 존재하지 않을 떄' })
+  @ApiResponse({ status: 403.1, description: '모임을 만든 사용자일 때' })
+  @ApiResponse({ status: 403.2, description: '모임에 참가하지 않은 사용자일 때' })
+  @ApiResponse({ status: 401, description: '로그인 없을 시'})
+  @ApiResponse({ status: 200, description: '이 외 정상적 응답' })
   @UseGuards(AuthGuard)
   @ApiBearerAuth('token')
   async leaveMeeting(@Req() req: Request, @Body() meetingIdDto: MeetingIdDto) {
@@ -88,6 +109,11 @@ export class MeetingController {
 
   @Delete('/delete')
   @ApiOperation({ summary: '모임 삭제(만든 사람만 가능)' })
+  @ApiResponse({ status: 404, description: '미팅이 존재하지 않을 떄' })
+  @ApiResponse({ status: 403.1, description: '모임을 만든 사용자가 아닐 때' })
+  @ApiResponse({ status: 403.2, description: '모임에 참가한 사용자가 최소 인원 이상일 때' })
+  @ApiResponse({ status: 401, description: '로그인 없을 시'})
+  @ApiResponse({ status: 200, description: '이 외 정상적 응답' })
   @UseGuards(AuthGuard)
   @ApiBearerAuth('token')
   remove(@Req() req: Request, @Body() meetingIdDto: MeetingIdDto) {

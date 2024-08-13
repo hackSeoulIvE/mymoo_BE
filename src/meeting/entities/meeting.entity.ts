@@ -27,7 +27,7 @@ export class Meeting{
     @JoinColumn()
     created_by: User;
 
-    @ManyToMany(() => User, (user) => user.posted_meetings)
+    @ManyToMany(() => User, (user) => user.my_meetings)
     meetingUsers: User[];
 
     @ManyToMany(() => User, (user) => user.liked_meetings)

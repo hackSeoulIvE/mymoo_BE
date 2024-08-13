@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
@@ -8,6 +8,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { SocialSignupDto } from './dto/social.signup.dto';
 import { User } from 'src/users/entities/user.entity';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class AuthService {
@@ -23,12 +24,12 @@ export class AuthService {
 
     const user = await this.userService.findByUserId(user_id);
     if(!user) {
-      return { message: '아이디 또는 비밀번호를 확인해주세요.' }
+      throw new UnauthorizedException('아이디 또는 비밀번호를 확인해주세요.');
     }
     
     const isSamePassword = bcrypt.compareSync(password, user.password);
     if(!isSamePassword) {
-      return { message: '아이디 또는 비밀번호를 확인해주세요.' }
+      throw new UnauthorizedException('아이디 또는 비밀번호를 확인해주세요.');
     }
 
     const payload = { id: user.id, nickname: user.nickname};
@@ -46,12 +47,12 @@ export class AuthService {
 
     const user = await this.userService.findByUserId(user_id);
     if(user) {
-      return { message: '이미 존재하는 아이디입니다.' }
+      throw new ForbiddenException('이미 존재하는 아이디입니다.');
     }
 
     const userByNickname = await this.userService.findByNickname(nickname);
     if(userByNickname) {
-      return { message: '이미 존재하는 닉네임입니다.' }
+      throw new ForbiddenException('이미 존재하는 닉네임입니다.');
     }
 
     return await this.userService.signup(signupDto);
@@ -61,7 +62,7 @@ export class AuthService {
     const user = await this.userService.findByRefreshToken(refreshToken);
     
     if(!user) {
-      return { message: '유효하지 않은 토큰입니다.' }
+      throw new UnauthorizedException('유효하지 않은 토큰입니다.');
     }
     const payload = { id: user.id, nickname: user.nickname};
 
@@ -76,7 +77,7 @@ export class AuthService {
   async chkid(user_id: string) {
     const user = await this.userService.findByUserId(user_id);
     if(user) {
-      return { message: '이미 존재하는 아이디입니다.' }
+      throw new ForbiddenException('이미 존재하는 아이디입니다.');
     }
     return { message: '사용 가능한 아이디입니다.' }
   }
@@ -84,7 +85,7 @@ export class AuthService {
   async chknickname(nickname: string) {
     const user = await this.userService.findByNickname(nickname);
     if(user) {
-      return { message: '이미 존재하는 닉네임입니다.' }
+      throw new ForbiddenException('이미 존재하는 닉네임입니다.');
     }
     return { message: '사용 가능한 닉네임입니다.' }
   }
@@ -93,7 +94,7 @@ export class AuthService {
     this.cacheManager.del(email);
     const user = await this.userService.findByEmail(email);
     if(user) {
-      return { message: '이미 가입된 이메일입니다.' }
+      throw new ForbiddenException('이미 가입된 이메일입니다.');
     }
 
     const verifynum = this.generateRandomNumber().toString();
@@ -108,7 +109,7 @@ export class AuthService {
     this.cacheManager.del(email);
     const user = await this.userService.findByEmail(email);
     if(!user) {
-      return { message: '가입되지 않은 이메일입니다.' }
+      throw new ForbiddenException('가입되지 않은 이메일입니다.');
     }
 
     const verifynum = this.generateRandomNumber().toString();
@@ -123,11 +124,11 @@ export class AuthService {
     this.cacheManager.del(email);
     const user = await this.userService.findByEmail(email);
     if(!user) {
-      return { message: '가입되지 않은 이메일입니다.' }
+      throw new ForbiddenException('가입되지 않은 이메일입니다.');
     }
     
     if(user.user_id !== userid) {
-      return { message: '아이디가 일치하지 않습니다.' }
+      throw new ForbiddenException('아이디가 일치하지 않습니다.');
     }
 
     const verifynum = this.generateRandomNumber().toString();
@@ -142,13 +143,13 @@ export class AuthService {
     const cacheVerifynum = await this.cacheManager.get(email);
 
     if(!cacheVerifynum) {
-      return { message: '인증번호가 만료되었거나 입력되지 않은 이메일입니다.' }
+      throw new NotFoundException('인증번호가 만료되었거나 입력되지 않은 이메일입니다.');
     }
     if(verifynum+'new' === cacheVerifynum) {
       await this.cacheManager.del(email);
       return { message: '인증되었습니다.' }
     } else {
-      return { message: '인증번호가 일치하지 않습니다.' }
+      throw new UnauthorizedException('인증번호가 일치하지 않습니다.');
     }
   }
 
@@ -157,14 +158,14 @@ export class AuthService {
     let user = await this.userService.findByEmail(email);
 
     if(!cacheVerifynum) {
-      return { message: '인증번호가 만료되었거나 입력되지 않은 이메일입니다.' }
+      throw new NotFoundException('인증번호가 만료되었거나 입력되지 않은 이메일입니다.');
     }
     if(verifynum+'forgotid' === cacheVerifynum) {
       await this.cacheManager.del(email);
       
       return { message: `인증되었습니다. 아이디는 ${user.user_id}입니다.` }
     } else {
-      return { message: '인증번호가 일치하지 않습니다.' }
+      throw new NotFoundException('인증번호가 일치하지 않습니다.');
     }
   }
 
@@ -173,11 +174,11 @@ export class AuthService {
     const user = await this.userService.findByEmail(email);
 
     if(user.user_id !== userid) {
-      return { message: '아이디가 일치하지 않습니다.' }
+      throw new UnauthorizedException('아이디가 일치하지 않습니다.');
     }
 
     if(!cacheVerifynum) {
-      return { message: '인증번호가 만료되었거나 입력되지 않은 이메일입니다.' }
+      throw new NotFoundException('인증번호가 만료되었거나 입력되지 않은 이메일입니다.');
     }
     if(verifynum+'forgotpassword' === cacheVerifynum) {
       await this.cacheManager.del(email);
@@ -185,7 +186,7 @@ export class AuthService {
       await this.userService.updatepassword(user, tempPassword);
       return { message: `인증되었습니다. 임시 비밀번호는 ${tempPassword}입니다. 반드시 비밀번호를 해주세요.` }
     } else {
-      return { message: '인증번호가 일치하지 않습니다.' }
+      throw new UnauthorizedException('인증번호가 일치하지 않습니다.');
     }
   }
 

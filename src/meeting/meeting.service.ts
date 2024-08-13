@@ -47,7 +47,7 @@ export class MeetingService {
 
 
     meeting.created_by = user;
-    meeting.meetingUsers = [];
+    meeting.meetingUsers = [user];
     meeting.likedUsers = [];
     meeting.deadline = createMeetingDto.deadline;
     meeting.meeting_date = createMeetingDto.meeting_date;
@@ -66,10 +66,10 @@ export class MeetingService {
     const possible_type = ['all', 'play', 'eat', 'extra', 'study'];
     const poosible_search = ['meeting_name_description', 'created_by'];
     if(!possible_type.includes(type)) {
-      throw new NotFoundException('1');
+      throw new ForbiddenException('type이 올바르지 않습니다');
     }
     if(searchtype && !poosible_search.includes(searchtype)) {
-      throw new NotFoundException('2');
+      throw new ForbiddenException('searchtype이 올바르지 않습니다');
     }
     return this.meetingRepository.findMeeting(type, searchtype, keyword, stdate, eddate, isnew, user);
   }

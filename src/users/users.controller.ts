@@ -1,11 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, UseInterceptors, UploadedFile, UnsupportedMediaTypeException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, UseInterceptors, UploadedFile, UnsupportedMediaTypeException, ForbiddenException, InternalServerErrorException, UnauthorizedException, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { UpdateUserPwdDto } from './dto/update-user.dto';
 import { AuthGuard } from 'src/auth/security/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage, FileFilterCallback } from 'multer';
+import { UpdateUserNickDto } from './dto/update-nickname.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -49,50 +50,38 @@ export class UsersController {
     return image.filename;
   }
 
-  @Get('/mademeeting')
-  @ApiOperation({ summary: '내가 만든 모임 조회' })
+  @Get('/comingmeeting')
+  @ApiResponse({ status: 401, description: '로그인 없을 시'})
+  @ApiResponse({ status: 200, description: '로그인 시' })
+  @ApiOperation({ summary: '다가오는 모임 조회//type은 all, mine, joined 중 하나' })
   @UseGuards(AuthGuard)
   @ApiBearerAuth('token')
-  findMadeMeetings(@Req() req: Request) {
+  findComingMeetings(@Req() req: Request, @Query('type') type: string) {
     const { user }:any = req;
-    return this.usersService.findMadeMeetings(user);
+    return this.usersService.findComingMeetings(user, type);
   }
 
 
-  @Get('/postedmeeting')
-  @ApiOperation({ summary: '내가 가입한 모임 조회' })
+  @Get('/pastmeeting')
+  @ApiOperation({ summary: '내가 가입한 모임 조회//type은 all, mine, joined 중 하나' })
+  @ApiResponse({ status: 401, description: '로그인 없을 시'})
+  @ApiResponse({ status: 200, description: '로그인 시' })
   @UseGuards(AuthGuard)
   @ApiBearerAuth('token')
-  findPostedMeetings(@Req() req: Request) {
+  findPastMeetings(@Req() req: Request, @Query('type') type: string) {
     const { user }:any = req;
-    return this.usersService.findPostedMeetings(user);
+    return this.usersService.findPastMeetings(user, type);
   }
 
   @Get('/likedmeeting')
-  @ApiOperation({ summary: '내가 찜한 모임 조회' })
+  @ApiOperation({ summary: '내가 찜한 모임 조회//type은 all, mine, joined 중 하나' })
+  @ApiResponse({ status: 401, description: '로그인 없을 시'})
+  @ApiResponse({ status: 200, description: '로그인 시' })
   @UseGuards(AuthGuard)
   @ApiBearerAuth('token')
-  findLikedMeetings(@Req() req: Request) {
+  findLikedMeetings(@Req() req: Request, @Query('type') type: string) {
     const { user }:any = req;
-    return this.usersService.findLikedMeetings(user);
-  }
-
-  @Get('/mademeeting/all')
-  @ApiOperation({ summary: '내가 만든 모든 모임 조회' })
-  @UseGuards(AuthGuard)
-  @ApiBearerAuth('token')
-  findAllMadeyMeetings(@Req() req: Request) {
-    const { user }:any = req;
-    return this.usersService.findAllMadeMeetings(user);
-  }
-
-  @Get('/postedmeeting/all')
-  @ApiOperation({ summary: '내가 가입한 모든 모임 조회' })
-  @UseGuards(AuthGuard)
-  @ApiBearerAuth('token')
-  findAllPostedMeetings(@Req() req: Request) {
-    const { user }:any = req;
-    return this.usersService.findAllPostedMeetings(user);
+    return this.usersService.findLikedMeetings(user, type);
   }
 
   @Get('/mycomments')
@@ -104,8 +93,36 @@ export class UsersController {
     return this.usersService.findAllMyComments(user);
   }
 
+  @Patch('/changepwd')
+  @ApiOperation({ summary: '비밀번호 변경' })
+  @ApiResponse({ status: 401.1, description: '로그인 없을 시'})
+  @ApiResponse({ status: 401.2, description: '기존 비밀번호가 틀릴 때' })
+  @ApiResponse({ status: 403, description: '기존 비밀번호와 새로운 비밀번호가 같을 때' })
+  @ApiResponse({ status: 500, description: 'body형식을 지키지 않았을 때' })
+  @ApiResponse({ status: 200, description: '그 외 정상적인 응답' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('token')
+  updatePwd(@Req() req: Request, @Body() updateUserDto: UpdateUserPwdDto) {
+    const { user }:any = req;
+    return this.usersService.updatePwd(user, updateUserDto);
+  }
+
+  @Patch('/updatenick')
+  @ApiOperation({ summary: '닉네임 변경' })
+  @ApiResponse({ status: 401, description: '로그인 없을 시'})
+  @ApiResponse({ status: 500, description: 'body형식을 지키지 않았을 때' })
+  @ApiResponse({ status: 200, description: '그 외 정상적인 응답' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('token')
+  updateNick(@Req() req: Request, @Body() updateUserNickDto: UpdateUserNickDto) {
+    const { user }:any = req;
+    return this.usersService.updateNick(user, updateUserNickDto);
+  }
+
   @Delete('/delete')
   @ApiOperation({ summary: '유저 탈퇴' })
+  @ApiResponse({ status: 401, description: '로그인 없을 시'})
+  @ApiResponse({ status: 200, description: '그 외 정상적인 응답' })
   @UseGuards(AuthGuard)
   @ApiBearerAuth('token')
   remove(@Req() req: Request) {

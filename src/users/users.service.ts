@@ -1,13 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { User } from './entities/user.entity';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserPwdDto } from './dto/update-user.dto';
 import { query } from 'express';
 import { MeetingRepository } from 'src/meeting/meeting.repository';
 import { DataSource } from 'typeorm';
 import { AuthDto } from 'src/auth/dto/auth.dto';
 import { SocialSignupDto } from 'src/auth/dto/social.signup.dto';
 import * as bcrypt from 'bcrypt';
+import { UpdateUserNickDto } from './dto/update-nickname.dto';
 
 @Injectable()
 export class UsersService {
@@ -36,8 +37,23 @@ export class UsersService {
     return await this.userRepository.save(user);
   }
 
+  async updatePwd(user: User, updateUserDto: UpdateUserPwdDto) {
+    if(!bcrypt.compareSync(updateUserDto.nowpassword, user.password)){
+      throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
+    }
+    if(updateUserDto.nowpassword === updateUserDto.newpassword) {
+      throw new ForbiddenException('새로운 비밀번호가 기존 비밀번호와 동일합니다.');
+    }
+    return await this.updatepassword(user, updateUserDto.newpassword);
+  }
+
   async updatepassword(user: User, password: string) {
     user.password = await bcrypt.hashSync(password, 10);
+    return await this.userRepository.save(user);
+  }
+
+  async updateNick(user: User, updateUserNickDto: UpdateUserNickDto) {
+    user.nickname = updateUserNickDto.nickname;
     return await this.userRepository.save(user);
   }
 
@@ -75,24 +91,37 @@ export class UsersService {
     return this.userRepository.findByRefreshToken(refreshToken);
   }
 
-  findMadeMeetings(user: User) {
-    return this.userRepository.findMadeMeetings(user);
+  findComingMeetings(user: User, type: string) {
+    const possible_type = ["all", "mine", "joined"];
+    if(!type) {
+      type = "all";
+    }
+    if(!possible_type.includes(type)) {
+      throw new ForbiddenException('잘못된 타입입니다.');
+    }
+    return this.userRepository.findComingMeetings(user, type);
   }
 
-  findPostedMeetings(user: User) {
-    return this.userRepository.findPostedMeetings(user);
+  findPastMeetings(user: User, type: string) {
+    const possible_type = ["all", "mine", "joined"];
+    if(!type) {
+      type = "all";
+    }
+    if(!possible_type.includes(type)) {
+      throw new ForbiddenException('잘못된 타입입니다.');
+    }
+    return this.userRepository.findComingMeetings(user, type);
   }
 
-  findLikedMeetings(user: User) {
-    return this.userRepository.findLikedMeetings(user);
-  }
-
-  findAllMadeMeetings(user: User) {
-    return this.userRepository.findAllMadeMeetings(user);
-  }
-
-  findAllPostedMeetings(user: User) {
-    return this.userRepository.findAllPostedMeetings(user);
+  findLikedMeetings(user: User, type: string) {
+    const possible_type = ["all", "mine", "joined"];
+    if(!type) {
+      type = "all";
+    }
+    if(!possible_type.includes(type)) {
+      throw new ForbiddenException('잘못된 타입입니다.');
+    }
+    return this.userRepository.findComingMeetings(user, type);
   }
 
   findAllMyComments(user: User) {

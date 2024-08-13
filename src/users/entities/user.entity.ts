@@ -32,7 +32,7 @@ export class User {
     
     @ManyToMany(() => Meeting, (meeting) => meeting.meetingUsers)
     @JoinTable()
-    posted_meetings: Meeting[];
+    my_meetings: Meeting[];
 
     @ManyToMany(() => Meeting, (meeting) => meeting.likedUsers)
     @JoinTable()

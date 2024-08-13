@@ -1,4 +1,4 @@
-import { Between, EntityManager, MoreThan, Repository } from 'typeorm';
+import { Between, Brackets, EntityManager, MoreThan, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Meeting } from './entities/meeting.entity';
@@ -43,24 +43,25 @@ export class MeetingRepository extends Repository<Meeting> {
         
         if(searchtype) {
             if(searchtype === 'meeting_name_description') {
-                queryBuilder.andWhere('meeting_name LIKE :keyword OR meeting_description LIKE :keyword', { keyword: `%${keyword}%` });
+                queryBuilder.andWhere(new Brackets
+                    (qb => {qb.where('meeting_name LIKE :keyword OR meeting_description LIKE :keyword', { keyword: `%${keyword}%` })}));
             }else if(searchtype === 'created_by') {
                 queryBuilder.andWhere('created_by.nickname LIKE :keyword', { keyword: `%${keyword}%` });
             }
         }
 
         queryBuilder.select([
-            'meeting.id',
-            'meeting.meeting_name',
-            'meeting.meeting_description',
-            'meeting.type',
-            'meeting.user_count',
-            'meeting.deadline',
-            'meeting.meeting_date',
-            'meeting.min_user',
-            'meeting.max_user',
-            'meeting.createdAt',
-            'created_by.nickname',
+            'meeting.id AS id',
+            'meeting.meeting_name AS meeting_name',
+            'meeting.meeting_description AS meeting_description',
+            'meeting.type AS type',
+            'meeting.user_count AS user_count',
+            'meeting.deadline AS deadline',
+            'meeting.meeting_date AS meeting_date',
+            'meeting.min_user AS min_user',
+            'meeting.max_user AS max_user',
+            'meeting.createdAt AS createdAt',
+            'created_by.nickname AS created_by',
           ])
         
         if(user){
@@ -74,7 +75,7 @@ export class MeetingRepository extends Repository<Meeting> {
         
 
         if(isnew) {
-            queryBuilder.orderBy('created_at', 'ASC');
+            queryBuilder.orderBy('createdAt', 'ASC');
         }
         else{
             queryBuilder.orderBy('meeting_date', 'DESC');

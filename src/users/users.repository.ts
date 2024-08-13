@@ -32,50 +32,42 @@ export class UsersRepository extends Repository<User> {
         return await this.repository.findOne({ where : { refreshtoken : refreshToken}});
     }
 
-    async findMadeMeetings(user: User) {
+    async findComingMeetings(user: User, type:string) {
         const currentDate = new Date();
+        const queryBuilder = this.repository.createQueryBuilder('user')
+        
+        queryBuilder.where('user.id = :id', { id: user.id });
+        if(type === 'all') {
+            queryBuilder.leftJoinAndSelect('user.my_meetings', 'meeting', 'meeting.meeting_date > :currentDate', { currentDate });
+        }else if(type === 'mine') {
+            queryBuilder.leftJoinAndSelect('user.made_meetings', 'meeting', 'meeting.meeting_date > :currentDate', { currentDate });
+        }else if(type === 'joined') {
+            queryBuilder.leftJoinAndSelect('user.my_meetings', 'meeting', 'meeting.meeting_date > :currentDate', { currentDate });
+        }
+        
+        queryBuilder.orderBy('meeting.meeting_date', 'ASC');
 
-        return this.repository.createQueryBuilder('user')
-          .leftJoinAndSelect('user.made_meetings', 'meeting', 'meeting.meeting_date > :currentDate', { currentDate })
-          .where('user.id = :id', { id: user.id })
-          .orderBy('meeting.meeting_date', 'ASC')
-          .getOne();
+        return queryBuilder.getOne();
     }
 
-    async findPostedMeetings(user: User) {
+    async findPastMeetings(user: User, type:string) {
         const currentDate = new Date();
 
         return this.repository.createQueryBuilder('user')
           .leftJoinAndSelect('user.posted_meetings', 'meeting', 'meeting.meeting_date > :currentDate', { currentDate })
           .where('user.id = :id', { id: user.id })
           .orderBy('meeting.meeting_date', 'ASC')
-          .getOne();
+          .getMany();
     }
 
-    async findLikedMeetings(user: User) {
+    async findLikedMeetings(user: User, type:string) {
         const currentDate = new Date();
 
         return this.repository.createQueryBuilder('user')
           .leftJoinAndSelect('user.liked_meetings', 'meeting', 'meeting.meeting_date > :currentDate', { currentDate })
           .where('user.id = :id', { id: user.id })
           .orderBy('meeting.meeting_date', 'ASC')
-          .getOne();
-    }
-
-    async findAllMadeMeetings(user: User) {
-        return this.repository.createQueryBuilder('user')
-          .leftJoinAndSelect('user.made_meetings', 'meeting')
-          .where('user.id = :id', { id: user.id })
-          .orderBy('meeting.meeting_date', 'DESC')
-          .getOne();
-    }
-
-    async findAllPostedMeetings(user: User) {
-        return this.repository.createQueryBuilder('user')
-          .leftJoinAndSelect('user.posted_meetings', 'meeting')
-          .where('user.id = :id', { id: user.id })
-          .orderBy('meeting.meeting_date', 'DESC')
-          .getOne();
+          .getMany();
     }
 
     async findAllMyComments(user: User) {
