@@ -31,7 +31,8 @@ export class MeetingCommentService {
             
             comment.parent = parent;
         } 
-        return await this.meetingCommentRepository.save(comment);
+        await this.meetingCommentRepository.save(comment);
+        return this.getComments(meeting_id);
     }
 
     async getComments(meeting_id: number) {

@@ -121,4 +121,38 @@ export class MeetingController {
     const { user }:any = req;
     return this.meetingService.remove(user, meeting_id);
   }
+
+  
+  @Get('/my/comingmeeting')
+  @ApiResponse({ status: 401, description: '로그인 없을 시'})
+  @ApiResponse({ status: 200, description: '로그인 시' })
+  @ApiOperation({ summary: '다가오는 모임 조회//type은 all, mine, joined 중 하나' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('token')
+  findComingMeetings(@Req() req: Request, @Query('type') type: string) {
+    const { user }:any = req;
+    return this.meetingService.findComingMeetings(user, type);
+  }
+
+  @Get('/my/pastmeeting')
+  @ApiOperation({ summary: '내가 가입한 모임 조회//type은 all, mine, joined 중 하나' })
+  @ApiResponse({ status: 401, description: '로그인 없을 시'})
+  @ApiResponse({ status: 200, description: '로그인 시' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('token')
+  findPastMeetings(@Req() req: Request, @Query('type') type: string) {
+    const { user }:any = req;
+    return this.meetingService.findPastMeetings(user, type);
+  }
+
+  @Get('/my/likedmeeting')
+  @ApiOperation({ summary: '내가 찜한 모임 조회//type은 all만 존재' })
+  @ApiResponse({ status: 401, description: '로그인 없을 시'})
+  @ApiResponse({ status: 200, description: '로그인 시' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('token')
+  findLikedMeetings(@Req() req: Request, @Query('type') type: string) {
+    const { user }:any = req;
+    return this.meetingService.findLikedMeetings(user, type);
+  }
 }

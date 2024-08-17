@@ -20,7 +20,6 @@ export class MeetingRepository extends Repository<Meeting> {
     async findMeeting(type: string, searchtype?: string, keyword?: string, startdate?: Date, eddate?: Date, isnew?: boolean, user?: User): Promise<Meeting[]> {
         const current_date = new Date();
         let stdate = new Date(startdate);
-        let wherecondtion, ordercondtion;
         const queryBuilder = this.repository.createQueryBuilder('meeting')
 
         queryBuilder.leftJoinAndSelect('meeting.created_by', 'created_by');
@@ -49,38 +48,58 @@ export class MeetingRepository extends Repository<Meeting> {
                 queryBuilder.andWhere('created_by.nickname LIKE :keyword', { keyword: `%${keyword}%` });
             }
         }
-
-        queryBuilder.select([
-            'meeting.id AS id',
-            'meeting.meeting_name AS meeting_name',
-            'meeting.meeting_description AS meeting_description',
-            'meeting.type AS type',
-            'meeting.user_count AS user_count',
-            'meeting.deadline AS deadline',
-            'meeting.meeting_date AS meeting_date',
-            'meeting.min_user AS min_user',
-            'meeting.max_user AS max_user',
-            'meeting.createdAt AS createdAt',
-            'created_by.nickname AS created_by',
-          ])
-        
-        if(user){
-            queryBuilder.addSelect(`CASE WHEN meetingUsers.id = ${user.id} OR created_by.id = ${user.id} THEN TRUE ELSE FALSE END`, 'is_joined');
-            queryBuilder.addSelect(`CASE WHEN likedUsers.id = ${user.id} THEN TRUE ELSE FALSE END`, 'is_liked');
-        }
-        else{
-            queryBuilder.addSelect('FALSE', 'is_joined');
-            queryBuilder.addSelect('FALSE', 'is_liked');
-        }
         
 
         if(isnew) {
             queryBuilder.orderBy('createdAt', 'ASC');
         }
         else{
-            queryBuilder.orderBy('meeting_date', 'DESC');
+            queryBuilder.orderBy('meeting_date', 'ASC');
         }
 
-        return await queryBuilder.getRawMany();
+        return await queryBuilder.getMany();
+    }
+
+    async findUserMeetings(user: User, type:string, iscoming: boolean): Promise<Meeting[]> {
+        const currentDate = new Date();
+        const queryBuilder = this.repository.createQueryBuilder('meeting')
+        queryBuilder.leftJoinAndSelect('meeting.created_by', 'created_by');
+        queryBuilder.leftJoinAndSelect('meeting.meetingUsers', 'meetingUsers');
+        queryBuilder.leftJoinAndSelect('meeting.likedUsers', 'likedUsers');
+        if(iscoming) {
+            queryBuilder.where('meeting_date > :currentDate', { currentDate });
+        }else{
+            queryBuilder.where('meeting_date < :currentDate', { currentDate });
+        }   
+        if(type === 'all') {
+            queryBuilder.andWhere('meetingUsers.id = :id', { id: user.id });
+        }
+        else if(type === 'mine') {
+            queryBuilder.andWhere('created_by.id = :id', { id: user.id });
+        }
+        else if(type === 'joined') {
+            queryBuilder.andWhere('meetingUsers.id = :id', { id: user.id });
+            queryBuilder.andWhere('created_by.id != :id', { id: user.id });
+        }
+        queryBuilder.orderBy('meeting_date', 'ASC');
+        
+        const result = await queryBuilder.getMany();
+
+        return result;
+    }
+
+    async findLikedMeetings(user: User, type:string): Promise<Meeting[]> {
+        const currentDate = new Date();
+        const queryBuilder = this.repository.createQueryBuilder('meeting')
+        queryBuilder.leftJoinAndSelect('meeting.created_by', 'created_by');
+        queryBuilder.leftJoinAndSelect('meeting.meetingUsers', 'meetingUsers');
+        queryBuilder.leftJoinAndSelect('meeting.likedUsers', 'likedUsers');
+        queryBuilder.where('likedUsers.id = :id', { id: user.id });
+        queryBuilder.andWhere('meeting_date > :currentDate', { currentDate });
+        queryBuilder.orderBy('meeting_date', 'ASC');
+        
+        const result = await queryBuilder.getMany();
+
+        return result
     }
 }

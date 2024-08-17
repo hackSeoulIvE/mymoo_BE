@@ -53,7 +53,7 @@ export class UsersController {
   @Get('/comingmeeting')
   @ApiResponse({ status: 401, description: '로그인 없을 시'})
   @ApiResponse({ status: 200, description: '로그인 시' })
-  @ApiOperation({ summary: '다가오는 모임 조회//type은 all, mine, joined 중 하나' })
+  @ApiOperation({ summary: '다가오는 모임 조회//type은 all, mine, joined 중 하나 (일단은 Meeting에 있는걸 사용해주세요)' })
   @UseGuards(AuthGuard)
   @ApiBearerAuth('token')
   findComingMeetings(@Req() req: Request, @Query('type') type: string) {
@@ -63,7 +63,7 @@ export class UsersController {
 
 
   @Get('/pastmeeting')
-  @ApiOperation({ summary: '내가 가입한 모임 조회//type은 all, mine, joined 중 하나' })
+  @ApiOperation({ summary: '내가 가입한 모임 조회//type은 all, mine, joined 중 하나 (일단은 Meeting에 있는걸 사용해주세요)' })
   @ApiResponse({ status: 401, description: '로그인 없을 시'})
   @ApiResponse({ status: 200, description: '로그인 시' })
   @UseGuards(AuthGuard)
@@ -74,7 +74,7 @@ export class UsersController {
   }
 
   @Get('/likedmeeting')
-  @ApiOperation({ summary: '내가 찜한 모임 조회//type은 all, mine, joined 중 하나' })
+  @ApiOperation({ summary: '내가 찜한 모임 조회//type은 all만 존재 (일단은 Meeting에 있는걸 사용해주세요)' })
   @ApiResponse({ status: 401, description: '로그인 없을 시'})
   @ApiResponse({ status: 200, description: '로그인 시' })
   @UseGuards(AuthGuard)

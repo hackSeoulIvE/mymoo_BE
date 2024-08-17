@@ -1,10 +1,12 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, forwardRef, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
 import { MeetingRepository } from './meeting.repository';
 import { Meeting } from './entities/meeting.entity';
 import { User } from 'src/users/entities/user.entity';
 import { DataSource } from 'typeorm';
 import { UsersRepository } from 'src/users/users.repository';
+import { plainToClass } from 'class-transformer';
+import { meetingReturnDto } from './dto/return-meeting.dto';
 
 @Injectable()
 export class MeetingService {
@@ -62,16 +64,58 @@ export class MeetingService {
     return this.meetingRepository.findById(id);
   }
 
-  findMeeting(type: string, searchtype?: string, keyword?: string, stdate?: Date, eddate?: Date, isnew?: boolean, user?: User) {
+  async findMeeting(type: string, searchtype?: string, keyword?: string, stdate?: Date, eddate?: Date, isnew?: boolean, user?: User) {
     const possible_type = ['all', 'play', 'eat', 'extra', 'study'];
     const poosible_search = ['meeting_name_description', 'created_by'];
+    const date_type = {min: 1000*60, hour: 1000*60*60, day: 1000*60*60*24, week: 1000*60*60*24*7, month: 1000*60*60*24*30, year: 1000*60*60*24*365};
+
     if(!possible_type.includes(type)) {
       throw new ForbiddenException('type이 올바르지 않습니다');
     }
     if(searchtype && !poosible_search.includes(searchtype)) {
       throw new ForbiddenException('searchtype이 올바르지 않습니다');
     }
-    return this.meetingRepository.findMeeting(type, searchtype, keyword, stdate, eddate, isnew, user);
+    let result = await this.meetingRepository.findMeeting(type, searchtype, keyword, stdate, eddate, isnew, user);
+    const current_date = new Date();
+
+    result.forEach((meeting) => {
+      const time_diff = current_date.getTime() - meeting.createdAt.getTime()
+      if(Math.floor(time_diff/date_type.min) == 0) {
+        meeting['created_time'] = '방금 전';
+      }else if(Math.floor(time_diff/date_type.hour) == 0) {
+        meeting['created_time'] = `${Math.floor(time_diff/date_type.min)}분 전`;
+      }else if(Math.floor(time_diff/date_type.day) == 0) {
+        meeting['created_time'] = `${Math.floor(time_diff/date_type.hour)}시간 전`;
+      }else if(Math.floor(time_diff/date_type.week) == 0) {
+        meeting['created_time'] = `${Math.floor(time_diff/date_type.day)}일 전`;
+      }else if(Math.floor(time_diff/date_type.month) == 0) {
+        meeting['created_time'] = `${Math.floor(time_diff/date_type.week)}주 전`;
+      }else if(Math.floor(time_diff/date_type.year) == 0) {
+        meeting['created_time'] = `${Math.floor(time_diff/date_type.month)}달 전`;
+      }else {
+        meeting['created_time'] = `${Math.floor(time_diff/date_type.year)}년 전`;
+      }
+    })
+
+    if(user) {
+      result.forEach((meeting) => {
+        if(meeting.meetingUsers.find((u) => u.id === user.id)) {
+          meeting['is_joined'] = true;
+        }
+        else{
+          meeting['is_joined'] = false;
+        }
+        if(meeting.likedUsers.find((u) => u.id === user.id)) {
+          meeting['is_liked'] = true;
+        }
+        else{
+          meeting['is_liked'] = false;
+        }
+      })
+    }
+    const new_result = result.map((meeting)  => plainToClass(meetingReturnDto, meeting));
+    
+    return new_result;
   }
 
   async joinMeeting(user: User, meeting_id: number) {
@@ -168,5 +212,50 @@ export class MeetingService {
     }
     
     return this.meetingRepository.delete(id);
+  }
+
+  async findComingMeetings(user: User, type: string) {
+    const possible_type = ["all", "mine", "joined"];
+    if(!type) {
+      type = "all";
+    }
+    if(!possible_type.includes(type)) {
+      throw new ForbiddenException('잘못된 타입입니다.');
+    }
+
+    const result = await this.meetingRepository.findUserMeetings(user, type, true);
+    const newresult = result.map((meeting) => plainToClass(meetingReturnDto, meeting));
+    
+    return newresult;
+  }
+
+  async findPastMeetings(user: User, type: string) {
+    const possible_type = ["all", "mine", "joined"];
+    if(!type) {
+      type = "all";
+    }
+    if(!possible_type.includes(type)) {
+      throw new ForbiddenException('잘못된 타입입니다.');
+    }
+
+    const result = await this.meetingRepository.findUserMeetings(user, type, false);
+    const newresult = result.map((meeting) => plainToClass(meetingReturnDto, meeting));
+    
+    return newresult;
+  }
+
+  async findLikedMeetings(user: User, type: string) {
+    const possible_type = ["all"];
+    if(!type) {
+      type = "all";
+    }
+    if(!possible_type.includes(type)) {
+      throw new ForbiddenException('잘못된 타입입니다.');
+    }
+
+    const result = await this.meetingRepository.findLikedMeetings(user, type);
+    const newresult = result.map((meeting) => plainToClass(meetingReturnDto, meeting));
+    
+    return newresult;
   }
 }

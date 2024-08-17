@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, forwardRef, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { User } from './entities/user.entity';
 import { UpdateUserPwdDto } from './dto/update-user.dto';
@@ -9,6 +9,7 @@ import { AuthDto } from 'src/auth/dto/auth.dto';
 import { SocialSignupDto } from 'src/auth/dto/social.signup.dto';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserNickDto } from './dto/update-nickname.dto';
+import { MeetingService } from 'src/meeting/meeting.service';
 
 @Injectable()
 export class UsersService {
@@ -110,18 +111,18 @@ export class UsersService {
     if(!possible_type.includes(type)) {
       throw new ForbiddenException('잘못된 타입입니다.');
     }
-    return this.userRepository.findComingMeetings(user, type);
+    return this.userRepository.findPastMeetings(user, type);
   }
 
   findLikedMeetings(user: User, type: string) {
-    const possible_type = ["all", "mine", "joined"];
+    const possible_type = ["all"];
     if(!type) {
       type = "all";
     }
     if(!possible_type.includes(type)) {
       throw new ForbiddenException('잘못된 타입입니다.');
     }
-    return this.userRepository.findComingMeetings(user, type);
+    return this.userRepository.findLikedMeetings(user, type);
   }
 
   findAllMyComments(user: User) {
