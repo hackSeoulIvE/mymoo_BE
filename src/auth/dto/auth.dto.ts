@@ -22,64 +22,6 @@ export namespace AuthDto {
         user_password: string;
     }
 
-    export class email {
-        @ApiProperty({
-            example: "wintery39@korea.ac.kr",
-            description: 'user_email',
-        })
-        email: string;
-    }
-    export class checkEmail {
-        @ApiProperty({
-            example: "wintery39@korea.ac.kr",
-            description: 'user_email',
-        })
-        email: string;
-        @ApiProperty({
-            example: '524372',
-            description: 'verify number',
-        })
-        @IsString()
-        verifynumber: string;
-    }
-
-    export class forgotPassword {
-        @ApiProperty({
-            example: "honggildong",
-            description: 'user_id',
-        })
-        @IsString()
-        user_id: string;
-
-        @ApiProperty({
-            example: "wintery39@korea.ac.kr",
-            description: 'user_email',
-        })
-        email: string;
-    }
-
-    export class checkForgotPassword {
-        @ApiProperty({
-            example: "honggildong",
-            description: 'user_id',
-        })
-        @IsString()
-        user_id: string;
-
-        @ApiProperty({
-            example: "wintery39@korea.ac.kr",
-            description: 'user_email',
-        })
-        email: string;
-        @ApiProperty({
-            example: '524372',
-            description: 'verify number',
-        })
-        @IsString()
-        verifynumber: string;
-    }
-
-
     export class SignUp {
         @ApiProperty({
             example: 'honggildong',
@@ -97,20 +39,10 @@ export namespace AuthDto {
         password: string;
 
         @ApiProperty({
-            example: 'thisisemail@email.co.kr',
-            description: 'email',
-        })
-        @IsNotEmpty()
-        @IsString()
-        @MaxLength(100)
-        email: string;
-
-        @ApiProperty({
-            example: '홍길동123',
-            description: 'nickname',
+            example: '홍길동',
+            description: 'password',
         })
         @IsString()
-        @Length(4, 20)
         nickname: string;
     }
 

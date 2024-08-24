@@ -3,16 +3,19 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { User } from 'src/users/entities/user.entity';
-import { UsersModule } from 'src/users/users.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtStrategy } from 'src/auth/security/passport.jwt.strategy';
-import { Meeting } from 'src/meeting/entities/meeting.entity';
-import { MeetingModule } from 'src/meeting/meeting.module';
-import { MeetingComment } from 'src/meeting/entities/meeting.comment.entity';
-import { MailModule } from 'src/mail/mail.module';
 import { CacheModule } from '@nestjs/cache-manager';
+import { User } from 'src/user/entities/user.entity';
+import { FoodStoreController } from 'src/foodstore/foodstore.controller';
+import { Foodstore } from 'src/foodstore/entities/foodstore.entity';
+import { FoodstoreComment } from 'src/foodstore/entities/foodstore_comment.entity';
+import { FoodstoreFood } from 'src/foodstore/entities/foodstore_food.entity';
+import { UserOrder } from 'src/order/entities/order.entity';
+import { UserModule } from 'src/user/user.module';
+import { FoodStoreModule } from 'src/foodstore/foodstore.module';
+import { OrderModule } from 'src/order/order.module';
 
 @Module({
   imports: [
@@ -27,11 +30,11 @@ import { CacheModule } from '@nestjs/cache-manager';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [User, Meeting, MeetingComment],
+      entities: [User, Foodstore, FoodstoreComment, FoodstoreFood, UserOrder],
       migrations: [__dirname + '/src/migrations/*.ts'],
       autoLoadEntities: true,
       charset: 'utf8mb4',
-      synchronize: process.env.NODE_ENV !== 'production',
+      synchronize: false,
       logging: process.env.NODE_ENV !== 'production',
       keepConnectionAlive: true,
       timezone: '+09:00',
@@ -41,10 +44,10 @@ import { CacheModule } from '@nestjs/cache-manager';
       max: 100,
       isGlobal: true,
     }),
-    UsersModule,
+    UserModule,
     AuthModule,
-    MeetingModule,
-    MailModule,
+    FoodStoreModule,
+    OrderModule
   ],
   controllers: [AppController],
   providers: [AppService],

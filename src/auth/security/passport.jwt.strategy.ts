@@ -1,14 +1,14 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy, VerifiedCallback } from "passport-jwt";
+import { User } from "src/user/entities/user.entity";
+import { UserService } from "src/user/user.service";
 
-import { User } from "src/users/entities/user.entity";
-import { UsersService } from "src/users/users.service";
 
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private userService: UsersService) {
+  constructor(private userService: UserService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -16,9 +16,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     })
   }
 
-  async validate(payload: Payload, done: VerifiedCallback): Promise<User> {
+  async validate(payload: Payload, done: VerifiedCallback) {
     const { id } = payload
-    const user = await this.userService.findOne(id)
+    const user = await this.userService.findById(id)
     if (!user) {
       throw new UnauthorizedException({ message: '회원 존재하지 않음.' });
     }

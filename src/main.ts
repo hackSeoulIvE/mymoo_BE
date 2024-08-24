@@ -6,8 +6,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle('Kuconut')
-    .setDescription('Kakao를 이길 Kuconut API 입니다.')
+    .setTitle('angelhack API')
+    .setDescription('The angelhack API description')
     .setVersion('1.0')
     .addBearerAuth(
       {
