@@ -4,9 +4,9 @@ import { ApiProperty } from "@nestjs/swagger";
 export class SearchFoodstoreDto {
     @ApiProperty({
         example: '35.134',
-        description: 'longtitude',
+        description: 'longitude',
     })
-    longtitude: number;
+    longitude: number;
 
     @ApiProperty({
         example: '129.134',

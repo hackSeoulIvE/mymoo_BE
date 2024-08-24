@@ -3,6 +3,7 @@ import { CreateFoodStoreDto } from './dto/create-foodstore.dto';
 import { FoodStoreService } from './foodstore.service';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/security/auth.guard';
+import { SearchFoodstoreDto } from './dto/search-foodstore.dto';
 
 @ApiTags('Foodstore')
 @Controller('store')
@@ -22,12 +23,11 @@ export class FoodStoreController {
   }
 
 
-  @Get('storesearch')
+  @Post('storesearch')
   @ApiOperation({ summary: '가게 이름 검색 (빈 검색도 가능)' })
   @ApiQuery({ name: 'name', required: false })
-  storesearch(@Query('name') name?: string){
-    console.log("chk", name);
-    return this.storeService.search(name);
+  storesearch(@Body() searchfoodstoredto: SearchFoodstoreDto, @Query('name') name?: string) {
+    return this.storeService.search(searchfoodstoredto, name);
   }  
   
   

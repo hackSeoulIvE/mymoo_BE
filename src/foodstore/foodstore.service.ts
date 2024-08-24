@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateFoodStoreDto } from './dto/create-foodstore.dto';
 import { FoodStoreRepository } from './foodstore.repository';
+import { SearchFoodstoreDto } from './dto/search-foodstore.dto';
 
 
 @Injectable()
@@ -21,8 +22,8 @@ export class FoodStoreService {
     return this.storeRepository.findById(id);
   }
 
-  search(name?: string) {
-    return this.storeRepository.search(name);
+  search(searchfoodstoredto: SearchFoodstoreDto, name?: string) {
+    return this.storeRepository.search(searchfoodstoredto, name);
   }
 
 
