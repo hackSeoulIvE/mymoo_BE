@@ -16,9 +16,14 @@ import { UserRequest } from 'src/order/entities/order.entity';
 import { UserModule } from 'src/user/user.module';
 import { FoodStoreModule } from 'src/foodstore/foodstore.module';
 import { OrderModule } from 'src/order/order.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+    }),
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true}),
     TypeOrmModule.forRoot({
       type: 'mysql',

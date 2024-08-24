@@ -1,9 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Query, Res, HttpException, StreamableFile } from '@nestjs/common';
 import { CreateFoodStoreDto } from './dto/create-foodstore.dto';
 import { FoodStoreService } from './foodstore.service';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/security/auth.guard';
 import { SearchFoodstoreDto } from './dto/search-foodstore.dto';
+import { join } from 'path';
+import { createReadStream, existsSync } from 'fs';
+import { Response } from 'express';
+
 
 @ApiTags('Foodstore')
 @Controller('store')
@@ -29,6 +33,9 @@ export class FoodStoreController {
   storesearch(@Body() searchfoodstoredto: SearchFoodstoreDto, @Query('name') name?: string) {
     return this.storeService.search(searchfoodstoredto, name);
   }  
+
+
+  
   
   
   @Get('store:id')

@@ -45,7 +45,7 @@ export class UserService {
     user.refreshtoken = refreshToken;
     if(changeexpired) {
       const now = new Date();
-      const expires = new Date(now.getTime() + 24*60*60*1000*180);
+      const expires = new Date(now.getTime() + 24*60*60*1000);
       user.refreshTokenExpiresIn = expires;
     }
     return await this.userRepository.save(user);

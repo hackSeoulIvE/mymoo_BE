@@ -61,13 +61,17 @@ export class AuthService {
     return { message: '사용 가능한 아이디입니다.' }
   }
 
+  async signout(user: User) {
+    return await this.userService.updateRefresh(user, '', false);
+  }
+
   private async generateRefresh(user: User) {
 
     const payload = { id: user.id};
 
     const refreshToken = this.jwtService.sign(payload, {
       secret: process.env.REFRESH_TOKEN_SECRET,
-      expiresIn: '180d',
+      expiresIn: '1d',
     });
 
     return refreshToken;

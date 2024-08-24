@@ -13,7 +13,7 @@ import { UserService } from 'src/user/user.service';
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true}),
     JwtModule.register({
       secret: process.env.JWT_ACCESS_SECRET,
-      signOptions: { expiresIn: '1d' },
+      signOptions: { expiresIn: '1h' },
     }),
     PassportModule,
     UserModule,

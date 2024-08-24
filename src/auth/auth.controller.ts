@@ -30,6 +30,17 @@ export class AuthController {
     return this.authService.signup(signupDto);
   }
 
+  @Post('Signout')
+  @ApiOperation({ summary: '로그아웃' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('token')
+  async signout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const { user }:any = req;
+    await this.authService.signout(user);
+    res.clearCookie('refreshToken');
+    return res.send({ message: 'logout success' });
+  }
+
   @Get('Checkid:chk_user_id')
   @ApiOperation({ summary: '아이디 중복확인' })
   chkid(@Param('chk_user_id') chk_user_id: string) {
