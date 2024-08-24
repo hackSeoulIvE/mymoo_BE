@@ -1,8 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { CreateFoodStoreDto } from './dto/create-foodstore.dto';
 import { FoodStoreService } from './foodstore.service';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from 'src/auth/security/auth.guard';
+import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Foodstores')
 @Controller('store')
@@ -23,7 +22,6 @@ export class FoodStoreController {
   findOne(@Param('id') id: string) {
     return this.storeService.findOne(+id);
   }
-
 
   @Delete(':id')
   remove(@Param('id') id: string) {
