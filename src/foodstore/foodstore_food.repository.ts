@@ -12,7 +12,11 @@ export class FoodStoreFoodRepository extends Repository<FoodstoreFood> {
     }
 
     async findById(id: number) {
-        return this.repository.findOne({where: {id}});
+        const result = await this.repository.findOne({where: {id}, relations: ['foodstore']});
+        if (result === undefined) {
+            throw new NotFoundException('Food not found');
+        }
+        return result;
     }
 
 }

@@ -62,7 +62,7 @@ export class AuthService {
   }
 
   async signout(user: User) {
-    return await this.userService.updateRefresh(user, '', false);
+    return await this.userService.signout(user);
   }
 
   private async generateRefresh(user: User) {

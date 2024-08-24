@@ -28,12 +28,14 @@ export class FoodStoreCommentController {
 
   @Get('comment:id')
   @ApiOperation({ summary: '댓글 id 조회' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('token')
   findById(@Param('id') id: string) {
     return this.commentService.findById(+id);
   }
 
-  @Delete(':id')
-  @ApiOperation({ summary: '댓글 삭제' })
+  @Delete('delete/:id')
+  @ApiOperation({ summary: '댓글 삭제 (개발용)' })
   remove(@Param('id') id: string) {
     return this.commentService.remove(+id);
   }

@@ -41,20 +41,23 @@ export class AuthController {
     return res.send({ message: 'logout success' });
   }
 
-  @Get('Checkid:chk_user_id')
+  @Get('Checkid/:chk_user_id')
   @ApiOperation({ summary: '아이디 중복확인' })
   chkid(@Param('chk_user_id') chk_user_id: string) {
     return this.authService.chkid(chk_user_id);
   }
 
-  @Get('Checktoken')
-  @ApiOperation({ summary: '토큰 확인' })
+  @Get('Profile')
+  @ApiOperation({ summary: 'user 정보' })
   @UseGuards(AuthGuard)
   @ApiBearerAuth('token')
   checkToken(@Req() req: Request) {
     const { user }:any = req;
-    console.log(user.id);
-    return "인증된 토큰입니다.";
+    
+    return {
+      user_id : user.username, 
+      user_name : user.nickname,
+    };
   }
 
   @Post('Refresh')

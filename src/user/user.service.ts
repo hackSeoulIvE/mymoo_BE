@@ -51,6 +51,12 @@ export class UserService {
     return await this.userRepository.save(user);
   }
 
+  async signout(user: User) {
+    user.refreshtoken = null;
+    user.refreshTokenExpiresIn = null;
+    return await this.userRepository.save(user);
+  }
+
   findByRefreshToken(refreshToken: string) {
     return this.userRepository.findByRefreshToken(refreshToken);
   }

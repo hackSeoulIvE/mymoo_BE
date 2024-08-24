@@ -45,6 +45,10 @@ export class FoodStoreFoodService {
     return await this.orderService.foodOrder(user, food);
   }
 
+  findById(id: number) {
+    return this.foodRepository.findById(id);
+  }
+
   findAll() {
     return this.foodRepository.find();
   }

@@ -12,7 +12,7 @@ export class FoodStoreFoodController {
   constructor(private readonly storeService: FoodStoreFoodService) {}
 
   @Post()
-  @ApiOperation({ summary: '가게 음식 생성' })
+  @ApiOperation({ summary: '가게 음식 생성 (개발용)' })
   create(@Body() createFoodDto: createFoodStoreFoodDto) {
     return this.storeService.create(createFoodDto);
   }
@@ -32,8 +32,16 @@ export class FoodStoreFoodController {
     return this.storeService.foodOrder(user, orderfoodDto.food_id);
   }
 
-  @ApiOperation({ summary: '음식 제거' })
-  @Delete(':id')
+  @Get('/:id')
+  @ApiOperation({ summary: '음식 id로 검색' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('token')
+  findById(@Param('id') id: string) {
+    return this.storeService.findById(+id);
+  }
+
+  @ApiOperation({ summary: '음식 제거 (개발용)' })
+  @Delete('delete/:id')
   remove(@Param('id') id: string) {
     return this.storeService.remove(+id);
   }

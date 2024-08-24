@@ -14,11 +14,17 @@ export class FoodStoreRepository extends Repository<Foodstore> {
 
     async findById(id: number) {
         const queryBuilder = this.repository.createQueryBuilder('foodstore')
+        
         queryBuilder.leftJoinAndSelect('foodstore.foods', 'foods')
         queryBuilder.leftJoinAndSelect('foodstore.comments', 'comments')
         queryBuilder.leftJoinAndSelect('comments.user', 'comments_user')
         queryBuilder.where('foodstore.id = :id', {id: id })
-        return await queryBuilder.getOne()
+        
+        const result = await queryBuilder.getOne()
+        return {
+            ...result,
+            is_open: this.IsOpen(result.start_Time, result.end_Time),
+        }
     }
 
     async search(searchfooddto: SearchFoodstoreDto, keyword?: string) {
@@ -43,8 +49,19 @@ export class FoodStoreRepository extends Repository<Foodstore> {
             queryBuilder.where('foodstore.name like :keyword', {keyword: `%${keyword}%`})
         }
         queryBuilder.orderBy('distance', 'ASC')
-        queryBuilder.orderBy('foodstore.is_open', 'DESC')
-        return await queryBuilder.getMany()
+        const result = await queryBuilder.getMany()
+        const addopen = result.map((foodstore) => ({
+            ...foodstore,
+            is_open: this.IsOpen(foodstore.start_Time, foodstore.end_Time),
+        }))
+        return addopen.sort((a, b) => a.is_open === b.is_open ? 0 : a.is_open ? -1 : 1)
     }
-
+    private IsOpen(openTime, closeTime) {
+        const now = new Date();
+        const currentTime = now.toTimeString().substr(0, 8); 
+        if (openTime <= currentTime && closeTime >= currentTime) {
+            return true
+        }
+        return false
+    }
 }

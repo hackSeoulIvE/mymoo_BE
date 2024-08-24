@@ -10,13 +10,13 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  @ApiOperation({ summary: 'user 전체 조회' })
+  @ApiOperation({ summary: 'user 전체 조회 (개발용)' })
   findAll() {
     return this.userService.findAll();
   }
 
-  @Get('user:id')
-  @ApiOperation({ summary: 'user id 조회' })
+  @Get('user/:id')
+  @ApiOperation({ summary: 'user id 조회 (개발용)' })
   findOne(@Param('id') id: string) {
     return this.userService.findById(+id);
   }
@@ -30,8 +30,8 @@ export class UserController {
     return this.userService.findOrderRecord(user.id);
   }
 
-  @Delete('user:id')
-  @ApiOperation({ summary: 'user 삭제' })
+  @Delete('user/:id')
+  @ApiOperation({ summary: 'user 삭제 (개발용)' })
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
   }

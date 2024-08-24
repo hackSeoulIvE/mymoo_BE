@@ -18,9 +18,30 @@ export class OrderRepository extends Repository<UserRequest> {
         queryBuilder.leftJoinAndSelect('order.food', 'food')
         queryBuilder.leftJoinAndSelect('food.foodstore', 'foodstore')
         queryBuilder.where('user.id = :user_id', {user_id: user_id })
-        queryBuilder.select(['food', 'foodstore', 'order.created_at'])
+        queryBuilder.select(['food', 'foodstore', 'order.created_at', 'order.id'])
         queryBuilder.orderBy('order.created_at', 'DESC')
 
-        return await queryBuilder.getMany()
+        const result = await queryBuilder.getMany()
+        return result.map((order) => {
+            return {
+                ...order,
+                food: {
+                    ...order.food,
+                    foodstore: {
+                        ...order.food.foodstore,
+                        is_open: this.IsOpen(order.food.foodstore.start_Time, order.food.foodstore.end_Time),
+                    }
+                },
+            };
+        });
+    }
+
+    private IsOpen(openTime, closeTime) {
+        const now = new Date();
+        const currentTime = now.toTimeString().substr(0, 8); 
+        if (openTime <= currentTime && closeTime >= currentTime) {
+            return true
+        }
+        return false
     }
 }
