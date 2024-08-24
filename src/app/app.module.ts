@@ -4,6 +4,10 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
+import { UserOrder } from 'src/order/entities/order.entity';
+import { Foodstore } from 'src/foodstore/entities/foodstore.entity';
+import { FoodstoreComment } from 'src/foodstore/entities/foodstore_comment.entity';
+import { FoodstoreFood } from 'src/foodstore/entities/foodstore_food.entity';
 
 @Module({
   imports: [
@@ -18,11 +22,11 @@ import { User } from 'src/user/entities/user.entity';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [User],
+      entities: [User, UserOrder, Foodstore, FoodstoreComment, FoodstoreFood],
       migrations: [__dirname + '/src/migrations/*.ts'],
       autoLoadEntities: true,
       charset: 'utf8mb4',
-      synchronize: process.env.NODE_ENV !== 'production',
+      synchronize: false,
       logging: process.env.NODE_ENV !== 'production',
       keepConnectionAlive: true,
       timezone: '+09:00',

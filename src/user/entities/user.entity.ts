@@ -1,4 +1,6 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity,PrimaryGeneratedColumn } from "typeorm";
+import { FoodstoreComment } from "src/foodstore/entities/foodstore_comment.entity";
+import { UserOrder } from "src/order/entities/order.entity";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity,OneToMany,PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ schema: 'user', name: 'user'})
 export class User {
@@ -14,9 +16,15 @@ export class User {
     @Column({name : 'nickname', type: 'varchar', length : 255, nullable : false})
     nickname: string;
 
+    @OneToMany(() => UserOrder, order => order.user)
+    orders: UserOrder[];
+
+    @OneToMany(() => FoodstoreComment, comment => comment.user)
+    comments: FoodstoreComment[];
+
     @CreateDateColumn()
-    createdAt: Date;
+    created_at: Date;
 
     @DeleteDateColumn()
-    deletedAt: Date | null;
+    deleted_at: Date | null;
 }
