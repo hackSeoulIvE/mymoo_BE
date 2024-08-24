@@ -37,6 +37,13 @@ export namespace AuthDto {
         @IsString()
         @Length(4, 20)
         password: string;
+
+        @ApiProperty({
+            example: '홍길동',
+            description: 'password',
+        })
+        @IsString()
+        nickname: string;
     }
 
     export class SignIn {

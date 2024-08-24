@@ -18,4 +18,8 @@ export class UserRepository extends Repository<User> {
     async findByUserId(username: string) {
         return this.repository.findOne({where: {username}});
     }
+
+    async findByNickname(nickname: string) {
+        return this.repository.findOne({where: {nickname}});
+    }
 }

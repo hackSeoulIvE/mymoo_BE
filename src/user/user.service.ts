@@ -18,6 +18,7 @@ export class UserService {
     const user = new User();
     user.username = signupDto.user_id;
     user.password = signupDto.password;
+    user.nickname = signupDto.nickname; 
 
     return await this.userRepository.save(user);
   }
@@ -32,6 +33,10 @@ export class UserService {
 
   findByUserId(user_id: string) {
     return this.userRepository.findByUserId(user_id);
+  }
+
+  findByNickname(nickname: string) {
+    return this.userRepository.findByNickname(nickname);
   }
 
   async remove(id: number) {

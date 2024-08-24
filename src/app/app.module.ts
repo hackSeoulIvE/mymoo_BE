@@ -8,6 +8,11 @@ import { UserOrder } from 'src/order/entities/order.entity';
 import { Foodstore } from 'src/foodstore/entities/foodstore.entity';
 import { FoodstoreComment } from 'src/foodstore/entities/foodstore_comment.entity';
 import { FoodstoreFood } from 'src/foodstore/entities/foodstore_food.entity';
+import { UserController } from 'src/user/user.controller';
+import { FoodStoreController } from 'src/foodstore/foodstore.controller';
+import { UserModule } from 'src/user/user.module';
+import { FoodStoreModule } from 'src/foodstore/foodstore.module';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
@@ -31,6 +36,9 @@ import { FoodstoreFood } from 'src/foodstore/entities/foodstore_food.entity';
       keepConnectionAlive: true,
       timezone: '+09:00',
     }),
+    UserModule,
+    FoodStoreModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

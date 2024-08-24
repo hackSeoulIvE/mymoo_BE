@@ -1,10 +1,13 @@
 import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { StoreService } from './foodstore.service';
 import { CreateFoodStoreDto } from './dto/create-foodstore.dto';
+import { FoodStoreService } from './foodstore.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Foodstores')
 @Controller('store')
-export class StoreController {
-  constructor(private readonly storeService: StoreService) {}
+export class FoodStoreController {
+  constructor(private readonly storeService: FoodStoreService) {}
 
   @Post()
   create(@Body() createStoreDto: CreateFoodStoreDto) {

@@ -1,15 +1,9 @@
-import { FoodstoreComment } from 'src/foodstore/entities/foodstore_comment.entity';
-import { UserOrder } from 'src/order/entities/order.entity';
-import {
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { FoodstoreComment } from "src/foodstore/entities/foodstore_comment.entity";
+import { UserOrder } from "src/order/entities/order.entity";
+import { BeforeInsert, Column, CreateDateColumn, DeleteDateColumn, Entity,OneToMany,PrimaryGeneratedColumn } from "typeorm";
+import * as bcrypt from 'bcrypt';
 
-@Entity({ schema: 'user', name: 'user' })
+@Entity({ schema: 'user', name: 'user'})
 export class User {
   @PrimaryGeneratedColumn({ name: 'id', type: 'int' })
   id: number;
@@ -34,4 +28,9 @@ export class User {
 
   @DeleteDateColumn()
   deleted_at: Date | null;
+
+  @BeforeInsert()
+  private async beforeInsert() {
+    this.password = await bcrypt.hashSync(this.password, 10);
+  }
 }

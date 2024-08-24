@@ -41,6 +41,11 @@ export class AuthService {
       throw new ForbiddenException('이미 존재하는 아이디입니다.');
     }
 
+    const chknickname = await this.userService.findByNickname(signupDto.nickname);
+    if(chknickname) {
+      throw new ForbiddenException('이미 존재하는 닉네임입니다.');
+    }
+
     return await this.userService.signup(signupDto);
   }
 
