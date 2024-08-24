@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateFoodStoreDto } from './dto/create-foodstore.dto';
 
-
 @Injectable()
 export class StoreService {
   create(createStoreDto: CreateFoodStoreDto) {
@@ -15,7 +14,6 @@ export class StoreService {
   findOne(id: number) {
     return `This action returns a #${id} store`;
   }
-
 
   remove(id: number) {
     return `This action removes a #${id} store`;

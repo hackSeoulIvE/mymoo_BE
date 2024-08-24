@@ -1,3 +1,4 @@
+import { Foodstore } from 'src/foodstore/entities/foodstore.entity';
 import {
   Column,
   CreateDateColumn,
@@ -6,13 +7,14 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Foodstore } from './foodstore.entity';
-import { UserOrder } from 'src/order/entities/order.entity';
 
-@Entity({ schema: 'Foodstore_food', name: 'Foodstore_food' })
-export class FoodstoreFood {
+@Entity({ schema: 'Foodstore', name: 'Foodstore' })
+export class Food {
   @PrimaryGeneratedColumn({ name: 'id', type: 'int' })
   id: number;
+
+  @ManyToOne(() => Foodstore, (foodStore) => foodStore.foods)
+  foodstore: Foodstore;
 
   @Column({ name: 'name', type: 'varchar', length: 255, nullable: false })
   name: string;
@@ -28,7 +30,12 @@ export class FoodstoreFood {
   })
   discount_price: string;
 
-  @Column({ name: 'description', type: 'varchar', length: 255 })
+  @Column({
+    name: 'description',
+    type: 'varchar',
+    length: 255,
+    nullable: false,
+  })
   description: string;
 
   @Column({ name: 'is_soldout', type: 'boolean' })
@@ -36,12 +43,6 @@ export class FoodstoreFood {
 
   @Column({ name: 'image_url', type: 'varchar', length: 255 })
   image_url: string;
-
-  @ManyToOne(() => Foodstore, (foodstore) => foodstore.foods)
-  foodstore: Foodstore;
-
-  @ManyToOne(() => UserOrder, (order) => order.food)
-  orders: UserOrder[];
 
   @CreateDateColumn()
   created_at: Date;
