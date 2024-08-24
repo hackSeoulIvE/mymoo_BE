@@ -38,7 +38,6 @@ export class UserService {
   }
 
   findOrderRecord(user_id: number) {
-    console.log(1);
     return this.orderService.findOrderRecord(user_id);
   }
 
@@ -50,6 +49,10 @@ export class UserService {
       user.refreshTokenExpiresIn = expires;
     }
     return await this.userRepository.save(user);
+  }
+
+  findByRefreshToken(refreshToken: string) {
+    return this.userRepository.findByRefreshToken(refreshToken);
   }
 
   async remove(id: number) {

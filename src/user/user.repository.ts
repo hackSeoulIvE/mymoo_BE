@@ -18,6 +18,11 @@ export class UserRepository extends Repository<User> {
         return this.repository.findOne({where: {id: id}});
     }
 
+    async findByRefreshToken(refreshToken: string): Promise<User> {
+        const now = new Date();
+        return await this.repository.findOne({ where : { refreshtoken : refreshToken}});
+    }
+
     async findByUserId(username: string) {
         return this.repository.findOne({where: {username}});
     }

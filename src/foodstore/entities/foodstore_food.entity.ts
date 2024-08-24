@@ -10,11 +10,11 @@ export class FoodstoreFood {
     @Column({name : 'name', type : 'varchar', length : 255, nullable : false})
     name: string;
 
-    @Column({name : 'price', type: 'int'})
-    price: number;
+    @Column({name : 'price', type: 'varchar', length : 255})
+    price: string;
 
-    @Column({name : "discount_price", type: 'int'})
-    discount_price: number;
+    @Column({name : "discount_price", type: 'varchar', length : 255})
+    discount_price: string;
 
     @Column({name : 'description', type: 'varchar', length : 255})
     description: string;

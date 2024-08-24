@@ -15,7 +15,6 @@ export class AuthController {
   async signin(@Body() signinDto: AuthDto.SignIn, @Res({ passthrough: true }) res: Response): Promise<any> {
     const tokeninfo = await this.authService.signin(signinDto);
     
-    res.setHeader('Authorization', 'Bearer ' + tokeninfo.access_Token);
     res.cookie('refreshToken', tokeninfo.refresh_Token, { httpOnly: true});
 
     return {
@@ -45,5 +44,19 @@ export class AuthController {
     const { user }:any = req;
     console.log(user.id);
     return "인증된 토큰입니다.";
+  }
+
+  @Post('Refresh')
+  @ApiOperation({ summary: '토큰 재발급' })
+  async refresh(@Body() refresh: AuthDto.Refresh, @Res({ passthrough: true }) res: Response) {
+    const {access_Token, refresh_Token} = await this.authService.refreshToAccessToken(refresh.refreshToken);
+
+    res.cookie('refreshToken', refresh_Token, { httpOnly: true});
+
+    return {
+      message: 'login success',
+      access_token: access_Token,
+      refresh_token: refresh_Token,
+    };
   }
 }

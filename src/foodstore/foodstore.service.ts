@@ -1,23 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { CreateFoodStoreDto } from './dto/create-foodstore.dto';
+import { FoodStoreRepository } from './foodstore.repository';
 
 
 @Injectable()
 export class FoodStoreService {
+  constructor(
+    private readonly storeRepository: FoodStoreRepository
+  ) {}
+
   create(createStoreDto: CreateFoodStoreDto) {
-    return 'This action adds a new store';
+    return this.storeRepository.save(createStoreDto);
   }
 
   findAll() {
-    return `This action returns all store`;
+    return this.storeRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} store`;
+  findById(id: number) {
+    return this.storeRepository.findById(id);
   }
+
+  search(name?: string) {
+    return this.storeRepository.search(name);
+  }
+
 
 
   remove(id: number) {
-    return `This action removes a #${id} store`;
+    return this.storeRepository.delete(id);
   }
 }

@@ -28,6 +28,9 @@ export class Foodstore {
     @Column({name : 'location', type: 'varchar', length : 255})
     location: string;
 
+    @Column({name : 'is_open', type: 'boolean'})
+    is_open: boolean;
+
     @OneToMany(() => FoodstoreFood, food => food.foodstore)
     foods: FoodstoreFood[];
 

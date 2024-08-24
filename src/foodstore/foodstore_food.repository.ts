@@ -1,0 +1,18 @@
+import { EntityManager, MoreThan, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { FoodstoreFood } from './entities/foodstore_food.entity';
+
+@Injectable()
+export class FoodStoreFoodRepository extends Repository<FoodstoreFood> {
+    constructor(
+        @InjectRepository(FoodstoreFood) private readonly repository: Repository<FoodstoreFood>,
+    ) {
+        super(repository.target, repository.manager);
+    }
+
+    async findById(id: number) {
+        return this.repository.findOne({where: {id}});
+    }
+
+}

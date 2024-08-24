@@ -16,7 +16,10 @@ export class OrderRepository extends Repository<UserRequest> {
         const queryBuilder = this.repository.createQueryBuilder('order')
         queryBuilder.leftJoinAndSelect('order.user', 'user')
         queryBuilder.leftJoinAndSelect('order.food', 'food')
+        queryBuilder.leftJoinAndSelect('food.foodstore', 'foodstore')
         queryBuilder.where('user.id = :user_id', {user_id: user_id })
+        queryBuilder.select(['food', 'foodstore', 'order.created_at'])
+        queryBuilder.orderBy('order.created_at', 'DESC')
 
         return await queryBuilder.getMany()
     }

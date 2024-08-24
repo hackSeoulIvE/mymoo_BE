@@ -72,4 +72,20 @@ export class AuthService {
 
     return refreshToken;
   }
+
+  async refreshToAccessToken(refreshToken: string) {
+    const user = await this.userService.findByRefreshToken(refreshToken);
+    
+    if(!user) {
+      throw new UnauthorizedException('유효하지 않은 토큰입니다.');
+    }
+    const payload = { id: user.id, nickname: user.nickname};
+
+    const accessToken = this.jwtService.sign(payload);
+    const newRefreshToken = await this.generateRefresh(user);
+
+    await this.userService.updateRefresh(user, newRefreshToken, false);
+
+    return {access_Token: accessToken, refresh_Token: newRefreshToken};
+  }
 }

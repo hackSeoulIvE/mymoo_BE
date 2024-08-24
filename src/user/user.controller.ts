@@ -15,19 +15,22 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  @Get(':id')
+  @Get('user:id')
   @ApiOperation({ summary: 'user id 조회' })
   findOne(@Param('id') id: string) {
     return this.userService.findById(+id);
   }
 
-  @Get('user_id/:user_id')
+  @Get('order')
   @ApiOperation({ summary: 'user 주문 기록 조회' })
-  findOrderRecord(@Param('user_id') user_id: string) {
-    return this.userService.findOrderRecord(+user_id);
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('token')
+  findOrderRecord(@Req() req:Request) {
+    const { user }:any = req;
+    return this.userService.findOrderRecord(user.id);
   }
 
-  @Delete(':id')
+  @Delete('user:id')
   @ApiOperation({ summary: 'user 삭제' })
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
