@@ -12,7 +12,10 @@ export class UserRepository extends Repository<User> {
     }
 
     async findById(id: number) {
-        return this.repository.findOne({where: {id}});
+        if(isNaN(id)) {
+            throw new NotFoundException('id must be a number');
+        }
+        return this.repository.findOne({where: {id: id}});
     }
 
     async findByUserId(username: string) {

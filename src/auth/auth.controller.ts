@@ -15,7 +15,7 @@ export class AuthController {
   async signin(@Body() signinDto: AuthDto.SignIn, @Res({ passthrough: true }) res: Response): Promise<any> {
     const tokeninfo = await this.authService.signin(signinDto);
     
-    res.setHeader('Authorization', 'Bearer ' + [tokeninfo.refresh_Token]);
+    res.setHeader('Authorization', 'Bearer ' + tokeninfo.access_Token);
     res.cookie('refreshToken', tokeninfo.refresh_Token, { httpOnly: true});
 
     return {
@@ -43,6 +43,7 @@ export class AuthController {
   @ApiBearerAuth('token')
   checkToken(@Req() req: Request) {
     const { user }:any = req;
+    console.log(user.id);
     return "인증된 토큰입니다.";
   }
 }

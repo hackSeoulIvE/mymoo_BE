@@ -1,5 +1,5 @@
 import { FoodstoreComment } from "src/foodstore/entities/foodstore_comment.entity";
-import { UserOrder } from "src/order/entities/order.entity";
+import { UserRequest } from "src/order/entities/order.entity";
 import { BeforeInsert, Column, CreateDateColumn, DeleteDateColumn, Entity,OneToMany,PrimaryGeneratedColumn } from "typeorm";
 import * as bcrypt from 'bcrypt';
 
@@ -23,8 +23,8 @@ export class User {
     @Column({name: 'refreshTokenExpiresIn', type: 'timestamp', nullable: true})
     refreshTokenExpiresIn: Date;
 
-    @OneToMany(() => UserOrder, order => order.user)
-    orders: UserOrder[];
+    @OneToMany(() => UserRequest, order => order.user)
+    orders: UserRequest[];
 
     @OneToMany(() => FoodstoreComment, comment => comment.user)
     comments: FoodstoreComment[];

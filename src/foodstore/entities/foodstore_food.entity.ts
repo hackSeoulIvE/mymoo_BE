@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Foodstore } from "./foodstore.entity";
-import { UserOrder } from "src/order/entities/order.entity";
+import { UserRequest } from "src/order/entities/order.entity";
 
 @Entity({ schema: 'Foodstore_food', name: 'Foodstore_food'})
 export class FoodstoreFood {
@@ -28,8 +28,8 @@ export class FoodstoreFood {
     @ManyToOne(() => Foodstore, foodstore => foodstore.foods)
     foodstore: Foodstore;
 
-    @ManyToOne(() => UserOrder, order => order.food)
-    orders: UserOrder[];
+    @ManyToOne(() => UserRequest, order => order.food)
+    orders: UserRequest[];
 
     @CreateDateColumn()
     created_at: Date;

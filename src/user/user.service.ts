@@ -38,6 +38,7 @@ export class UserService {
   }
 
   findOrderRecord(user_id: number) {
+    console.log(1);
     return this.orderService.findOrderRecord(user_id);
   }
 
