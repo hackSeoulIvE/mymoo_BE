@@ -1,10 +1,9 @@
 # Kuconut_BE
-Kuconut Back-End Repository입니다.
+Mymoo Backend Repository입니다.
 
 ## Install project
 ```bash
-git clone https://github.com/Kuconut/Kuconut_BE.git
-```
+git clone https://github.com/hackSeoulIvE/mymoo_BE.git
 
 ## Install dependency
 ```bash

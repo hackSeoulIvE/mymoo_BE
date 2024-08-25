@@ -24,6 +24,11 @@ export class UserReturnDto {
 
     @Expose()
     deleted_at: Date | null;
+
+    toJSON() {
+        const { password, refreshtoken, refreshTokenExpiresIn, ...rest } = this;
+        return rest;
+    }
 }
 
 export class ReturnFoodDto{

@@ -6,6 +6,7 @@ import { FoodStoreService } from './foodstore.service';
 import { OrderService } from 'src/order/order.service';
 import { User } from 'src/user/entities/user.entity';
 import { Not } from 'typeorm';
+import { find } from 'rxjs';
 
 
 @Injectable()
@@ -17,6 +18,7 @@ export class FoodStoreFoodService {
   ) {}
 
   async create(createFoodDto: createFoodStoreFoodDto) {
+    const baseurl = 'https://storage.googleapis.com/mymoo/';
     const food = new FoodstoreFood();
     const store = await this.storeService.findById(createFoodDto.foodstore_id);
 
@@ -29,7 +31,7 @@ export class FoodStoreFoodService {
     food.discount_price = createFoodDto.discount_price;
     food.description = createFoodDto.description;
     food.is_soldout = createFoodDto.is_soldout;
-    food.image_url = createFoodDto.image_url;
+    food.image_url = baseurl+createFoodDto.image_url;
     food.foodstore = store;
 
     await this.foodRepository.save(food);
@@ -53,6 +55,11 @@ export class FoodStoreFoodService {
     return this.foodRepository.find();
   }
 
+  async update(id: number, updateFoodDto: createFoodStoreFoodDto) {
+    let food = await this.foodRepository.findById(id);
+    food.description = updateFoodDto.description;
+    return this.foodRepository.update(id, food);
+  }
 
 
   remove(id: number) {

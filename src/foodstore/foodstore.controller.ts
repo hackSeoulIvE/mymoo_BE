@@ -7,7 +7,7 @@ import { SearchFoodstoreDto } from './dto/search-foodstore.dto';
 import { join } from 'path';
 import { createReadStream, existsSync } from 'fs';
 import { Response } from 'express';
-import { plainToClass } from 'class-transformer';
+import { classToPlain, plainToClass } from 'class-transformer';
 import { ReturnFoodDto } from './dto/return-foodstore.dto';
 
 
@@ -45,8 +45,7 @@ export class FoodStoreController {
   @ApiBearerAuth('token')
   async findById(@Param('id') id: string) {
     const result = await this.storeService.findById(+id);
-    const new_result = plainToClass(ReturnFoodDto, result);
-    return new_result;
+    return result
 
   }
 

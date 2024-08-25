@@ -40,6 +40,12 @@ export class FoodStoreFoodController {
     return this.storeService.findById(+id);
   }
 
+  @Patch('update/:id')
+  @ApiOperation({ summary: '음식 수정 (개발용)' })
+  update(@Param('id') id: string, @Body() updateFoodDto: createFoodStoreFoodDto) {
+    return this.storeService.update(+id, updateFoodDto);
+  }
+  
   @ApiOperation({ summary: '음식 제거 (개발용)' })
   @Delete('delete/:id')
   remove(@Param('id') id: string) {

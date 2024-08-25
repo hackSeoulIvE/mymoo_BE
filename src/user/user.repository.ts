@@ -20,7 +20,7 @@ export class UserRepository extends Repository<User> {
 
     async findByRefreshToken(refreshToken: string): Promise<User> {
         const now = new Date();
-        return await this.repository.findOne({ where : { refreshtoken : refreshToken}});
+        return await this.repository.findOne({ where : { refreshtoken : refreshToken, refreshTokenExpiresIn : MoreThan(now) } });
     }
 
     async findByUserId(username: string) {

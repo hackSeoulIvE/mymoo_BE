@@ -56,9 +56,14 @@ export class FoodStoreRepository extends Repository<Foodstore> {
         }))
         return addopen.sort((a, b) => a.is_open === b.is_open ? 0 : a.is_open ? -1 : 1)
     }
+
+
+
     private IsOpen(openTime, closeTime) {
         const now = new Date();
+        now.setHours(now.getHours() + 9);
         const currentTime = now.toTimeString().substr(0, 8); 
+
         if (openTime <= currentTime && closeTime >= currentTime) {
             return true
         }

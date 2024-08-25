@@ -58,7 +58,11 @@ export class UserService {
   }
 
   findByRefreshToken(refreshToken: string) {
-    return this.userRepository.findByRefreshToken(refreshToken);
+    const result = this.userRepository.findByRefreshToken(refreshToken);
+    if(!result) {
+      throw new UnauthorizedException('Invalid token');
+    }
+    return result;
   }
 
   async remove(id: number) {
