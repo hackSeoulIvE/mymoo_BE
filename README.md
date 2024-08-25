@@ -1,4 +1,4 @@
-# Kuconut_BE
+# Mymoo_BE
 Mymoo Backend Repository입니다.
 
 ## Install project
